@@ -10,6 +10,7 @@ global using Testcontainers.PubSub;
 global using Testcontainers.LocalStack;
 global using MVFC.Messaging.Nats.IO.Nats;
 global using Amazon.SQS;
+global using FluentAssertions;
 global using Testcontainers.Kafka;
 global using Testcontainers.Nats;
 global using MVFC.Messaging.StackExchange.Redis;

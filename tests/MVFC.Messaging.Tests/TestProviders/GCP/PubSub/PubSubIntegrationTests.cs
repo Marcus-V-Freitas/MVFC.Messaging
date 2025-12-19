@@ -31,9 +31,9 @@ public sealed class PubSubIntegrationTests(PubSubFixture fixture, ITestOutputHel
         var receivedMessage = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
         // Assert
-        Assert.NotNull(receivedMessage);
-        Assert.Equal(sentMessage.Id, receivedMessage.Id);
-        Assert.Equal(sentMessage.Content, receivedMessage.Content);
+        receivedMessage.Should().NotBeNull();
+        sentMessage.Id.Should().Be(receivedMessage.Id);
+        sentMessage.Content.Should().Be(receivedMessage.Content);
 
         await consumer.StopAsync();
     }
@@ -72,7 +72,7 @@ public sealed class PubSubIntegrationTests(PubSubFixture fixture, ITestOutputHel
         await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
         // Assert
-        Assert.Equal(3, receivedMessages.Count);
+        receivedMessages.Count.Should().Be(3);
 
         await consumer.StopAsync();
     }

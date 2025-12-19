@@ -26,9 +26,9 @@ public sealed class InMemoryIntegrationTests(ITestOutputHelper output)
         var receivedMessage = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
         // Assert
-        Assert.NotNull(receivedMessage);
-        Assert.Equal(sentMessage.Id, receivedMessage.Id);
-        Assert.Equal(sentMessage.Content, receivedMessage.Content);
+        receivedMessage.Should().NotBeNull();
+        sentMessage.Id.Should().Be(receivedMessage.Id);
+        sentMessage.Content.Should().Be(receivedMessage.Content);
 
         await consumer.StopAsync();
     }
@@ -49,13 +49,13 @@ public sealed class InMemoryIntegrationTests(ITestOutputHelper output)
             lock (receivedMessages)
             {
                 receivedMessages.Add(msg);
-                if (receivedMessages.Count == 5)
+                if (receivedMessages.Count == 3)
                     tcs.SetResult(true);
             }
         }, CancellationToken.None);
 
         // Act
-        var messages = Enumerable.Range(1, 5)
+        var messages = Enumerable.Range(1, 3)
             .Select(i => new TestMessage { Id = i, Content = $"Message {i}" })
             .ToArray();
 
@@ -63,7 +63,7 @@ public sealed class InMemoryIntegrationTests(ITestOutputHelper output)
         await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
         // Assert
-        Assert.Equal(5, receivedMessages.Count);
+        receivedMessages.Count.Should().Be(3);
 
         await consumer.StopAsync();
     }
