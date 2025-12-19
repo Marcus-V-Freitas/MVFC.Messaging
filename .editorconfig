@@ -1,0 +1,153 @@
+root = true
+
+[*.cs]
+# ========================================
+# PRIORIZA CÓDIGO MENOS VERBOSO
+# ========================================
+
+dotnet_diagnostic.xUnit1045.severity = none
+
+# ===== VAR SEMPRE QUE POSSÍVEL =====
+# IDE0007: Use 'var' instead of explicit type
+csharp_style_var_for_built_in_types = true:warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = true:suggestion
+dotnet_diagnostic.IDE0007.severity = warning
+dotnet_diagnostic.IDE0008.severity = none
+
+# ===== IFS SIMPLIFICADOS (TERNÁRIOS) =====
+# IDE0045: Use conditional expression for assignment
+dotnet_style_prefer_conditional_expression_over_assignment = true:warning
+dotnet_diagnostic.IDE0045.severity = warning
+
+# IDE0046: Use conditional expression for return
+dotnet_style_prefer_conditional_expression_over_return = true:warning
+dotnet_diagnostic.IDE0046.severity = warning
+
+# ===== PATTERN MATCHING =====
+# IDE0019: Use pattern matching to avoid 'as' followed by null check
+csharp_style_pattern_matching_over_as_with_null_check = true:warning
+dotnet_diagnostic.IDE0019.severity = warning
+
+# IDE0020/IDE0038: Use pattern matching to avoid 'is' check followed by cast
+csharp_style_pattern_matching_over_is_with_cast_check = true:warning
+dotnet_diagnostic.IDE0020.severity = warning
+dotnet_diagnostic.IDE0038.severity = warning
+
+# IDE0066: Use switch expression
+csharp_style_prefer_switch_expression = true:suggestion
+dotnet_diagnostic.IDE0066.severity = suggestion
+
+# IDE0083: Use pattern matching (not operator)
+csharp_style_prefer_not_pattern = true:suggestion
+dotnet_diagnostic.IDE0083.severity = suggestion
+
+# ===== NULL CHECKING SIMPLIFICADO =====
+# IDE0029/IDE0030/IDE0270: Use coalescing expression
+dotnet_style_coalesce_expression = true:warning
+dotnet_diagnostic.IDE0029.severity = warning
+dotnet_diagnostic.IDE0030.severity = warning
+dotnet_diagnostic.IDE0270.severity = warning
+
+# IDE0031: Use null propagation
+dotnet_style_null_propagation = true:warning
+dotnet_diagnostic.IDE0031.severity = warning
+
+# IDE1005: Use conditional delegate call
+csharp_style_conditional_delegate_call = true:warning
+dotnet_diagnostic.IDE1005.severity = warning
+
+# ===== EXPRESSÕES SIMPLIFICADAS =====
+# IDE0032: Use auto property
+dotnet_style_prefer_auto_properties = true:suggestion
+dotnet_diagnostic.IDE0032.severity = suggestion
+
+# IDE0034: Simplify 'default' expression
+csharp_prefer_simple_default_expression = true:suggestion
+dotnet_diagnostic.IDE0034.severity = suggestion
+
+# IDE0037: Use inferred member name
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_diagnostic.IDE0037.severity = suggestion
+
+# IDE0039: Use local function instead of lambda
+csharp_style_pattern_local_over_anonymous_function = true:suggestion
+dotnet_diagnostic.IDE0039.severity = suggestion
+
+# IDE0041: Use 'is null' check
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
+dotnet_diagnostic.IDE0041.severity = warning
+
+# IDE0042: Deconstruct variable declaration
+csharp_style_deconstructed_variable_declaration = true:suggestion
+dotnet_diagnostic.IDE0042.severity = suggestion
+
+# IDE0056: Use index operator
+csharp_style_prefer_index_operator = true:suggestion
+dotnet_diagnostic.IDE0056.severity = suggestion
+
+# IDE0057: Use range operator
+csharp_style_prefer_range_operator = true:suggestion
+dotnet_diagnostic.IDE0057.severity = suggestion
+
+# IDE0090: Simplify 'new' expression
+csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
+dotnet_diagnostic.IDE0090.severity = suggestion
+
+# IDE0180: Use tuple to swap values
+csharp_style_prefer_tuple_swap = true:suggestion
+dotnet_diagnostic.IDE0180.severity = suggestion
+
+# ===== USING E NAMESPACE SIMPLIFICADOS =====
+# IDE0005: Remove unnecessary using directives
+dotnet_diagnostic.IDE0005.severity = warning
+
+# IDE0065: Using directive placement
+csharp_using_directive_placement = outside_namespace:suggestion
+dotnet_diagnostic.IDE0065.severity = suggestion
+
+# IDE0160/IDE0161: Use file-scoped namespace
+csharp_style_namespace_declarations = file_scoped:warning
+dotnet_diagnostic.IDE0160.severity = warning
+dotnet_diagnostic.IDE0161.severity = none
+
+# ===== EXPRESSION BODIES (CONCISO) =====
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_constructors = false:none
+csharp_style_expression_bodied_operators = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_expression_bodied_indexers = true:suggestion
+csharp_style_expression_bodied_accessors = true:suggestion
+csharp_style_expression_bodied_lambdas = true:suggestion
+csharp_style_expression_bodied_local_functions = when_on_single_line:suggestion
+
+# ========================================
+# DESABILITA REGRAS CHATAS
+# ========================================
+
+# Justificativa: Biblioteca de API client precisa de URL default
+dotnet_diagnostic.S1075.severity = none
+
+# Braces
+dotnet_diagnostic.IDE0011.severity = none
+dotnet_diagnostic.RCS1001.severity = none
+dotnet_diagnostic.RCS1003.severity = none
+dotnet_diagnostic.RCS1007.severity = none
+csharp_prefer_braces = false:none
+
+# ConfigureAwait
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.RCS1090.severity = none
+dotnet_diagnostic.MA0004.severity = none
+
+# Random não-criptográfico
+dotnet_diagnostic.CA5394.severity = none
+dotnet_diagnostic.S2245.severity = none
+
+# Globalization
+dotnet_diagnostic.CA1303.severity = none
+dotnet_diagnostic.CA1304.severity = none
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA1307.severity = none
+dotnet_diagnostic.CA1308.severity

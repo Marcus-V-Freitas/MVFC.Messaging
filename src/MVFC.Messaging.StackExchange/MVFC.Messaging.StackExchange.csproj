@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>0.0.0</Version>
+    <Authors>Marcus Vinicius de Freitas Costa</Authors>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <IsPackable>true</IsPackable>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://www.nuget.org/packages/MVFC.Messaging.StackExchange</PackageProjectUrl>
+    <PackageTags>redis;stackexchange;messaging;stream;queue;dotnet;library;integration;event-stream</PackageTags>
+    <RepositoryUrl>https://github.com/Marcus-V-Freitas/MVFC.Messaging/tree/master/src/MVFC.Messaging.StackExchange</RepositoryUrl>
+    <Description>Biblioteca .NET para integração com Redis Streams via StackExchange.Redis, fornecendo abstrações para publicação e consumo de mensagens em streams de forma eficiente e escalável.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.8.*" />
+  </ItemGroup>
+	
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
+  </ItemGroup>
+
+</Project>

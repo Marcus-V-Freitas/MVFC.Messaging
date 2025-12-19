@@ -1,12 +1,16 @@
 <Solution>
-  <Project Path="MVFC.Messaging.AWS/MVFC.Messaging.AWS.csproj" />
-  <Project Path="MVFC.Messaging.Azure/MVFC.Messaging.Azure.csproj" />
-  <Project Path="MVFC.Messaging.Confluent/MVFC.Messaging.Confluent.csproj" />
-  <Project Path="MVFC.Messaging.Core/MVFC.Messaging.Core.csproj" />
-  <Project Path="MVFC.Messaging.GCP/MVFC.Messaging.GCP.csproj" />
-  <Project Path="MVFC.Messaging.InMemory/MVFC.Messaging.InMemory.csproj" />
-  <Project Path="MVFC.Messaging.Nats.IO/MVFC.Messaging.Nats.IO.csproj" />
-  <Project Path="MVFC.Messaging.RabbitMQ/MVFC.Messaging.RabbitMQ.csproj" />
-  <Project Path="MVFC.Messaging.StackExchange/MVFC.Messaging.StackExchange.csproj" />
-  <Project Path="MVFC.Messaging.Tests/MVFC.Messaging.Tests.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/MVFC.Messaging.AWS/MVFC.Messaging.AWS.csproj" />
+    <Project Path="src/MVFC.Messaging.Azure/MVFC.Messaging.Azure.csproj" />
+    <Project Path="src/MVFC.Messaging.Confluent/MVFC.Messaging.Confluent.csproj" />
+    <Project Path="src/MVFC.Messaging.Core/MVFC.Messaging.Core.csproj" />
+    <Project Path="src/MVFC.Messaging.GCP/MVFC.Messaging.GCP.csproj" />
+    <Project Path="src/MVFC.Messaging.InMemory/MVFC.Messaging.InMemory.csproj" />
+    <Project Path="src/MVFC.Messaging.Nats.IO/MVFC.Messaging.Nats.IO.csproj" />
+    <Project Path="src/MVFC.Messaging.RabbitMQ/MVFC.Messaging.RabbitMQ.csproj" />
+    <Project Path="src/MVFC.Messaging.StackExchange/MVFC.Messaging.StackExchange.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="tests/MVFC.Messaging.Tests/MVFC.Messaging.Tests.csproj" />
+  </Folder>
 </Solution>

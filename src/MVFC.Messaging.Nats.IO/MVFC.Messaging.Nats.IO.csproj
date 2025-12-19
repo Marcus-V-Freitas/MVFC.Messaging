@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>0.0.0</Version>
+    <Authors>Marcus Vinicius de Freitas Costa</Authors>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <IsPackable>true</IsPackable>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://www.nuget.org/packages/MVFC.Messaging.Nats.IO</PackageProjectUrl>
+    <PackageTags>nats;messaging;queue;pubsub;dotnet;library;integration;event-stream</PackageTags>
+    <RepositoryUrl>https://github.com/Marcus-V-Freitas/MVFC.Messaging/tree/master/src/MVFC.Messaging.Nats.IO</RepositoryUrl>
+    <Description>Biblioteca .NET para integração com NATS, fornecendo abstrações para publicação e consumo de mensagens em tópicos e filas de forma eficiente e escalável.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NATS.Client.Core" Version="2.4.*" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+        <ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
+    </ItemGroup>
+
+</Project>

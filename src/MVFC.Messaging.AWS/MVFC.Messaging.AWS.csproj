@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net10.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<Version>0.0.0</Version>
+	<Authors>Marcus Vinicius de Freitas Costa</Authors>
+	<RepositoryType>git</RepositoryType>
+	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+	<IsPackable>true</IsPackable>
+	<PackageIcon>icon.png</PackageIcon>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<PackageProjectUrl>https://www.nuget.org/packages/MVFC.Messaging.AWS</PackageProjectUrl>
+	<PackageTags>aws;messaging;sqs;queue;cloud;dotnet;library;integration</PackageTags>
+	<RepositoryUrl>https://github.com/Marcus-V-Freitas/MVFC.Messaging/tree/master/src/MVFC.Messaging.AWS</RepositoryUrl>
+	<Description>Biblioteca .NET para integração com AWS SQS, fornecendo abstrações para publicação e consumo de mensagens em filas na nuvem de forma simples e eficiente.</Description>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AWSSDK.SQS" Version="3.7.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
+	</ItemGroup>
+
+</Project>
