@@ -13,14 +13,14 @@ MVFC.Messaging é um conjunto de bibliotecas para mensageria assíncrona, com um
 
 Cada provider possui um README próprio com exemplos detalhados de uso e configuração:
 
-- **[MVFC.Messaging.AWS](./MVFC.Messaging.AWS/README.md)** — Amazon SQS
-- **[MVFC.Messaging.Azure](./MVFC.Messaging.Azure/README.md)** — Azure Service Bus
-- **[MVFC.Messaging.Confluent](./MVFC.Messaging.Confluent/README.md)** — Apache Kafka (Confluent)
-- **[MVFC.Messaging.GCP](./MVFC.Messaging.GCP/README.md)** — Google Pub/Sub
-- **[MVFC.Messaging.InMemory](./MVFC.Messaging.InMemory/README.md)** — In-memory (para testes)
-- **[MVFC.Messaging.Nats.IO](./MVFC.Messaging.Nats.IO/README.md)** — NATS.io
-- **[MVFC.Messaging.RabbitMQ](./MVFC.Messaging.RabbitMQ/README.md)** — RabbitMQ
-- **[MVFC.Messaging.StackExchange](./MVFC.Messaging.StackExchange/README.md)** — Redis Streams
+- **[MVFC.Messaging.AWS](./src/MVFC.Messaging.AWS/README.md)** — Amazon SQS
+- **[MVFC.Messaging.Azure](./src/MVFC.Messaging.Azure/README.md)** — Azure Service Bus
+- **[MVFC.Messaging.Confluent](./src/MVFC.Messaging.Confluent/README.md)** — Apache Kafka (Confluent)
+- **[MVFC.Messaging.GCP](./src/MVFC.Messaging.GCP/README.md)** — Google Pub/Sub
+- **[MVFC.Messaging.InMemory](./src/MVFC.Messaging.InMemory/README.md)** — In-memory (para testes)
+- **[MVFC.Messaging.Nats.IO](./src/MVFC.Messaging.Nats.IO/README.md)** — NATS.io
+- **[MVFC.Messaging.RabbitMQ](./src/MVFC.Messaging.RabbitMQ/README.md)** — RabbitMQ
+- **[MVFC.Messaging.StackExchange](./src/MVFC.Messaging.StackExchange/README.md)** — Redis Streams
 
 ## Estrutura do Projeto
 
