@@ -5,7 +5,7 @@
 [![CI](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml/badge.svg)](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging/branch/master/graph/badge.svg)](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-![Platform](https://img.shields.io/badge/.NET-10-blue)
+![Platform](https://img.shields.io/badge/.NET-9%20%7C%2010-blue)
 
 Suíte completa de bibliotecas .NET para mensageria assíncrona, com uma arquitetura plugável e extensível que permite publicar e consumir mensagens em múltiplos brokers através de uma API unificada.
 
@@ -183,7 +183,7 @@ tools/
 
 ## Requisitos
 
-- .NET 10.0+
+- .NET 9.0+
 - O SDK nativo do broker para cada provedor (baixado automaticamente via NuGet)
 
 ## Contribuindo

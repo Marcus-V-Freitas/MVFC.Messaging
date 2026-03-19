@@ -5,7 +5,7 @@
 [![CI](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml/badge.svg)](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging/branch/master/graph/badge.svg)](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-![Platform](https://img.shields.io/badge/.NET-10-blue)
+![Platform](https://img.shields.io/badge/.NET-9%20%7C%2010-blue)
 ![NuGet Version](https://img.shields.io/nuget/v/MVFC.Messaging.RabbitMQ)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/MVFC.Messaging.RabbitMQ)
 
@@ -200,7 +200,7 @@ await consumer.StopAsync();
 
 ## Requirements
 
-- .NET 10.0+
+- .NET 9.0+
 - `RabbitMQ.Client` (installed automatically)
 - A running RabbitMQ server (or Docker: `docker run -p 5672:5672 -p 15672:15672 rabbitmq:management`)
 
