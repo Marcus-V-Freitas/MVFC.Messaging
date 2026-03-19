@@ -18,19 +18,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.30.*" />
+	<None Include="README.md" Pack="true" PackagePath="" />
+	<None Include="icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.PubSub.V1" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="icon.png" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-
-	<ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
   </ItemGroup>
 

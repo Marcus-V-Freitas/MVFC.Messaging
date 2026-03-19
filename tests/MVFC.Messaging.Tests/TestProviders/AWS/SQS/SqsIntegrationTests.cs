@@ -1,4 +1,4 @@
-﻿namespace MVFC.Messaging.Tests.TestProviders.AWS.SQS;
+namespace MVFC.Messaging.Tests.TestProviders.AWS.SQS;
 
 public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHelper output) : IClassFixture<LocalStackFixture>
 {
@@ -13,7 +13,7 @@ public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHe
     {
         // Arrange
         var queueName = $"test-queue-{Guid.NewGuid()}";
-        var createQueueResponse = await _sqsClient.CreateQueueAsync(queueName);
+        var createQueueResponse = await _sqsClient.CreateQueueAsync(queueName, TestContext.Current.CancellationToken);
         var queueUrl = createQueueResponse.QueueUrl;
 
         await using var publisher = new SqsPublisher<TestMessage>(_sqsClient, queueUrl);
@@ -30,14 +30,14 @@ public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHe
         var sentMessage = new TestMessage { Id = 1, Content = "SQS Test" };
         await publisher.PublishAsync(sentMessage, CancellationToken.None);
 
-        var receivedMessage = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        var receivedMessage = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(15), TestContext.Current.CancellationToken);
 
         // Assert
         receivedMessage.Should().NotBeNull();
         sentMessage.Id.Should().Be(receivedMessage.Id);
         sentMessage.Content.Should().Be(receivedMessage.Content);
 
-        await consumer.StopAsync();
+        await consumer.StopAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHe
     {
         // Arrange
         var queueName = $"test-batch-{Guid.NewGuid()}";
-        var createQueueResponse = await _sqsClient.CreateQueueAsync(queueName);
+        var createQueueResponse = await _sqsClient.CreateQueueAsync(queueName, TestContext.Current.CancellationToken);
         var queueUrl = createQueueResponse.QueueUrl;
 
         await using var publisher = new SqsPublisher<TestMessage>(_sqsClient, queueUrl);
@@ -74,11 +74,58 @@ public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHe
         };
 
         await publisher.PublishBatchAsync(messages, CancellationToken.None);
-        await tcs.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        await tcs.Task.WaitAsync(TimeSpan.FromSeconds(15), TestContext.Current.CancellationToken);
 
         // Assert
         receivedMessages.Count.Should().Be(3);
 
-        await consumer.StopAsync();
+        await consumer.StopAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Should_DisposeAsync_Correctly()
+    {
+        // Arrange
+        var queueName = $"dispose-queue-{Guid.NewGuid()}";
+        var createQueueResponse = await _sqsClient.CreateQueueAsync(queueName, CancellationToken.None);
+        var queueUrl = createQueueResponse.QueueUrl;
+        var publisher = new SqsPublisher<TestMessage>(_sqsClient, queueUrl);
+        var consumer = new SqsConsumer<TestMessage>(_sqsClient, queueUrl);
+
+        // Act
+        await publisher.DisposeAsync();
+        await consumer.DisposeAsync();
+
+        // Assert
+        // No exceptions should be thrown
+    }
+
+    [Fact]
+    public async Task Should_HandleException_InHandler()
+    {
+        // Arrange
+        var queueName = $"exception-queue-{Guid.NewGuid()}";
+        var createQueueResponse = await _sqsClient.CreateQueueAsync(queueName, CancellationToken.None);
+        var queueUrl = createQueueResponse.QueueUrl;
+
+        await using var publisher = new SqsPublisher<TestMessage>(_sqsClient, queueUrl);
+        await using var consumer = new SqsConsumer<TestMessage>(_sqsClient, queueUrl);
+
+        var tcs = new TaskCompletionSource<bool>();
+        await consumer.StartAsync(async (msg, ct) =>
+        {
+            tcs.TrySetResult(true);
+            throw new Exception("Test Exception");
+        }, CancellationToken.None);
+
+        await Task.Delay(1000, TestContext.Current.CancellationToken);
+
+        // Act
+        await publisher.PublishAsync(new TestMessage { Id = 1, Content = "Exception Test" }, CancellationToken.None);
+        await tcs.Task.WaitAsync(TimeSpan.FromSeconds(15), TestContext.Current.CancellationToken);
+
+        // Assert
+        // The consumer should handle the exception and continue
+        await consumer.StopAsync(CancellationToken.None);
     }
 }

@@ -17,20 +17,17 @@
 	<Description>Biblioteca .NET para integração com AWS SQS, fornecendo abstrações para publicação e consumo de mensagens em filas na nuvem de forma simples e eficiente.</Description>
   </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="AWSSDK.SQS" Version="3.7.*" />
-	</ItemGroup>
+  <ItemGroup>
+	<None Include="README.md" Pack="true" PackagePath="" />
+	<None Include="icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="" />
-	</ItemGroup>
+  <ItemGroup>
+	<PackageReference Include="AWSSDK.SQS" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="icon.png" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
+  </ItemGroup>
 
 </Project>

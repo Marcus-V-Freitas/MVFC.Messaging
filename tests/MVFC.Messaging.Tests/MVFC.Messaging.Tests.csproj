@@ -8,19 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="fluentAssertions" Version="7.0.*" />
-    <PackageReference Include="coverlet.collector" Version="6.0.*" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.*" />
-    <PackageReference Include="xunit" Version="2.9.*" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.*" />
-	<PackageReference Include="Testcontainers.ServiceBus" Version="4.7.*" />
-	<PackageReference Include="Testcontainers.LocalStack" Version="4.7.*" />
-	<PackageReference Include="Testcontainers.MsSql" Version="4.7.*" />
-	<PackageReference Include="Testcontainers.PubSub" Version="4.7.*" />
-	<PackageReference Include="Testcontainers.RabbitMq" Version="4.7.*" />
-    <PackageReference Include="Testcontainers.Kafka" Version="4.7.*" />
-	<PackageReference Include="Testcontainers.Redis" Version="4.7.*" />
-	<PackageReference Include="Testcontainers.Nats" Version="4.7.*" />
+	<PackageReference Include="fluentAssertions" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+	<PackageReference Include="Testcontainers.ServiceBus" />
+	<PackageReference Include="Testcontainers.LocalStack" />
+	<PackageReference Include="Testcontainers.MsSql" />
+	<PackageReference Include="Testcontainers.PubSub" />
+	<PackageReference Include="Testcontainers.RabbitMq" />
+    <PackageReference Include="Testcontainers.Kafka" />
+	<PackageReference Include="Testcontainers.Redis" />
+	<PackageReference Include="Testcontainers.Nats" />
   </ItemGroup>
 
   <ItemGroup>

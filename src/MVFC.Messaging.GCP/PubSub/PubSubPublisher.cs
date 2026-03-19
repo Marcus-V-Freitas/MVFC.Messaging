@@ -11,14 +11,14 @@ public sealed class PubSubPublisher<T>(string projectId, string topicId) : Messa
         return new PublisherClientBuilder
         {
             TopicName = topicName,
-            EmulatorDetection = EmulatorDetection.EmulatorOrProduction
+            EmulatorDetection = EmulatorDetection.EmulatorOrProduction,
         }.Build();
     }
 
     protected override async Task PublishInternalAsync(T message, CancellationToken cancellationToken)
     {
         var messageData = SerializeMessage(message);
-        await _publisher.PublishAsync(messageData);
+        await _publisher.PublishAsync(messageData).ConfigureAwait(false);
     }
 
     protected override async Task PublishBatchInternalAsync(
@@ -26,28 +26,20 @@ public sealed class PubSubPublisher<T>(string projectId, string topicId) : Messa
         CancellationToken cancellationToken)
     {
         var publishTasks = CreatePublishTasks(messages, cancellationToken);
-        await Task.WhenAll(publishTasks);
+        await Task.WhenAll(publishTasks).ConfigureAwait(false);
     }
 
     private IEnumerable<Task> CreatePublishTasks(
         IEnumerable<T> messages,
-        CancellationToken cancellationToken)
-    {
-        return messages.Select(message => PublishInternalAsync(message, cancellationToken));
-    }
+        CancellationToken cancellationToken) =>
+            messages.Select(message => PublishInternalAsync(message, cancellationToken));
 
-    private static string SerializeMessage(T message)
-    {
-        return JsonSerializer.Serialize(message);
-    }
+    private static string SerializeMessage(T message) =>
+        JsonSerializer.Serialize(message);
 
-    public async ValueTask DisposeAsync()
-    {
-        await ShutdownPublisherAsync();
-    }
+    public async ValueTask DisposeAsync() =>
+        await ShutdownPublisherAsync().ConfigureAwait(false);
 
-    private async Task ShutdownPublisherAsync()
-    {
-        await _publisher.ShutdownAsync(CancellationToken.None);
-    }
+    private async Task ShutdownPublisherAsync() =>
+        await _publisher.ShutdownAsync(CancellationToken.None).ConfigureAwait(false);
 }

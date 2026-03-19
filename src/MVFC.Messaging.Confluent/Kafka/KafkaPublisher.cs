@@ -3,7 +3,7 @@
 public sealed class KafkaPublisher<T>(string bootstrapServers, string topic) 
     : MessagePublisherBase<T>, IAsyncDisposable
 {
-    private const int FlushTimeoutSeconds = 10;
+    private const int FLUSH_TIMEOUT_SECONDS = 10;
 
     private readonly IProducer<string, string> _producer = CreateKafkaProducer(bootstrapServers);
     private readonly string _topic = topic;
@@ -23,7 +23,7 @@ public sealed class KafkaPublisher<T>(string bootstrapServers, string topic)
     protected override async Task PublishInternalAsync(T message, CancellationToken cancellationToken)
     {
         var kafkaMessage = CreateKafkaMessage(message);
-        await _producer.ProduceAsync(_topic, kafkaMessage, cancellationToken);
+        await _producer.ProduceAsync(_topic, kafkaMessage, cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task PublishBatchInternalAsync(
@@ -31,7 +31,7 @@ public sealed class KafkaPublisher<T>(string bootstrapServers, string topic)
         CancellationToken cancellationToken)
     {
         var publishTasks = CreatePublishTasks(messages, cancellationToken);
-        await Task.WhenAll(publishTasks);
+        await Task.WhenAll(publishTasks).ConfigureAwait(false);
     }
 
     private IEnumerable<Task> CreatePublishTasks(
@@ -61,9 +61,9 @@ public sealed class KafkaPublisher<T>(string bootstrapServers, string topic)
     {
         FlushPendingMessages();
         _producer?.Dispose();
-        await Task.CompletedTask;
+        await Task.CompletedTask.ConfigureAwait(false);
     }
 
     private void FlushPendingMessages() =>
-        _producer?.Flush(TimeSpan.FromSeconds(FlushTimeoutSeconds));
+        _producer?.Flush(TimeSpan.FromSeconds(FLUSH_TIMEOUT_SECONDS));
 }

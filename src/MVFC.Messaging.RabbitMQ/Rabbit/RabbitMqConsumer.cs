@@ -2,60 +2,68 @@
 
 public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private const ushort PrefetchCount = 10;
+    private const ushort PREFETCH_COUNT = 10;
 
     private readonly IConnection _connection;
-    private readonly IModel _channel;
+    private readonly IChannel _channel;
     private readonly string _queueName;
     private AsyncEventingBasicConsumer? _consumer;
 
-    public RabbitMqConsumer(string connectionString, string queueName)
+    private RabbitMqConsumer(IConnection connection, IChannel channel, string queueName)
     {
+        _connection = connection;
+        _channel = channel;
         _queueName = queueName;
-        _connection = CreateConnection(connectionString);
-        _channel = _connection.CreateModel();
-
-        ConfigureQueue();
-        ConfigureQos();
     }
 
-    private static IConnection CreateConnection(string connectionString)
+    public static async Task<RabbitMqConsumer<T>> CreateAsync(
+        string connectionString,
+        string queueName)
+    {
+        var connection = await CreateConnectionAsync(connectionString).ConfigureAwait(false);
+        var channel = await connection.CreateChannelAsync().ConfigureAwait(false);
+
+        var consumer = new RabbitMqConsumer<T>(connection, channel, queueName);
+        await consumer.ConfigureQueueAsync().ConfigureAwait(false);
+        await consumer.ConfigureQosAsync().ConfigureAwait(false);
+
+        return consumer;
+    }
+
+    private static async Task<IConnection> CreateConnectionAsync(string connectionString)
     {
         var factory = new ConnectionFactory
         {
-            Uri = new Uri(connectionString),
-            DispatchConsumersAsync = true
+            Uri = new Uri(connectionString)
         };
 
-        return factory.CreateConnection();
+        return await factory.CreateConnectionAsync().ConfigureAwait(false);
     }
 
-    private void ConfigureQueue()
+    private async Task ConfigureQueueAsync()
     {
-        _channel.QueueDeclare(
+        await _channel.QueueDeclareAsync(
             queue: _queueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
-            arguments: null);
+            arguments: null).ConfigureAwait(false);
     }
 
-    private void ConfigureQos()
+    private async Task ConfigureQosAsync()
     {
-        _channel.BasicQos(
+        await _channel.BasicQosAsync(
             prefetchSize: 0,
-            prefetchCount: PrefetchCount,
-            global: false);
+            prefetchCount: PREFETCH_COUNT,
+            global: false).ConfigureAwait(false);
     }
 
-    protected override Task StartInternalAsync(CancellationToken cancellationToken)
+    protected override async Task StartInternalAsync(CancellationToken cancellationToken)
     {
         _consumer = new AsyncEventingBasicConsumer(_channel);
-        _consumer.Received += (sender, ea) => HandleMessageReceivedAsync(ea, cancellationToken);
+        _consumer.ReceivedAsync += (sender, ea) => HandleMessageReceivedAsync(ea, cancellationToken);
 
-        StartConsuming();
-
-        return Task.CompletedTask;
+        await StartConsumingAsync().ConfigureAwait(false);
     }
 
     private async Task HandleMessageReceivedAsync(
@@ -64,12 +72,12 @@ public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposab
     {
         try
         {
-            await ProcessMessageAsync(eventArgs, cancellationToken);
-            AcknowledgeMessage(eventArgs.DeliveryTag);
+            await ProcessMessageAsync(eventArgs, cancellationToken).ConfigureAwait(false);
+            await AcknowledgeMessageAsync(eventArgs.DeliveryTag).ConfigureAwait(false);
         }
         catch (Exception)
         {
-            RejectMessage(eventArgs.DeliveryTag);
+            await RejectMessageAsync(eventArgs.DeliveryTag).ConfigureAwait(false);
         }
     }
 
@@ -81,7 +89,7 @@ public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposab
 
         if (ShouldInvokeHandler(message))
         {
-            await Handler!(message!, cancellationToken);
+            await Handler!(message!, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -92,51 +100,41 @@ public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposab
         return JsonSerializer.Deserialize<T>(json);
     }
 
-    private bool ShouldInvokeHandler(T? message)
-    {
-        return Handler is not null && message is not null;
-    }
+    private bool ShouldInvokeHandler(T? message) =>
+        Handler is not null && message is not null;
 
-    private void AcknowledgeMessage(ulong deliveryTag)
-    {
-        _channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
-    }
+    private async Task AcknowledgeMessageAsync(ulong deliveryTag) =>
+        await _channel.BasicAckAsync(deliveryTag: deliveryTag, multiple: false).ConfigureAwait(false);
 
-    private void RejectMessage(ulong deliveryTag)
-    {
-        _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: true);
-    }
+    private async Task RejectMessageAsync(ulong deliveryTag) =>
+        await _channel.BasicNackAsync(deliveryTag: deliveryTag, multiple: false, requeue: true).ConfigureAwait(false);
 
-    private void StartConsuming()
+    private async Task StartConsumingAsync()
     {
-        _channel.BasicConsume(
+        await _channel.BasicConsumeAsync(
             queue: _queueName,
             autoAck: false,
-            consumer: _consumer);
+            consumer: _consumer!).ConfigureAwait(false);
     }
 
-    protected override Task StopInternalAsync(CancellationToken cancellationToken)
+    protected override Task StopInternalAsync(CancellationToken cancellationToken) =>
+        Task.CompletedTask;
+
+    public async ValueTask DisposeAsync()
     {
-        return Task.CompletedTask;
+        await CloseAndDisposeChannelAsync().ConfigureAwait(false);
+        await CloseAndDisposeConnectionAsync().ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    private async Task CloseAndDisposeChannelAsync()
     {
-        CloseAndDisposeChannel();
-        CloseAndDisposeConnection();
-
-        return ValueTask.CompletedTask;
+        await _channel.CloseAsync().ConfigureAwait(false);
+        _channel.Dispose();
     }
 
-    private void CloseAndDisposeChannel()
+    private async Task CloseAndDisposeConnectionAsync()
     {
-        _channel?.Close();
-        _channel?.Dispose();
-    }
-
-    private void CloseAndDisposeConnection()
-    {
-        _connection?.Close();
-        _connection?.Dispose();
+        await _connection.CloseAsync().ConfigureAwait(false);
+        _connection.Dispose();
     }
 }

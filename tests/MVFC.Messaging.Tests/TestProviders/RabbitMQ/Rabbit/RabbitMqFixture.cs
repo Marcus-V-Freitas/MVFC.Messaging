@@ -4,11 +4,10 @@ public sealed class RabbitMqFixture : FixtureBaseTest<RabbitMqContainer>
 {
     public RabbitMqFixture()
     {
-        Container = new RabbitMqBuilder()
-                              .WithImage("rabbitmq:3-management-alpine")
+        _container = new RabbitMqBuilder("rabbitmq:3-management-alpine")
                               .Build();
     }
 
     public override string ConnectionString() =>
-        Container.GetConnectionString();
+        _container.GetConnectionString();
 }

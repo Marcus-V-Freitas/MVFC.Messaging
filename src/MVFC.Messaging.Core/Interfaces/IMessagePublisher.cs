@@ -2,6 +2,7 @@
 
 public interface IMessagePublisher<in T>
 {
-    Task PublishAsync(T message, CancellationToken cancellationToken = default);
-    Task PublishBatchAsync(IEnumerable<T> messages, CancellationToken cancellationToken = default);
+    public Task PublishAsync(T message, CancellationToken cancellationToken = default);
+
+    public Task PublishBatchAsync(IEnumerable<T> messages, CancellationToken cancellationToken = default);
 }

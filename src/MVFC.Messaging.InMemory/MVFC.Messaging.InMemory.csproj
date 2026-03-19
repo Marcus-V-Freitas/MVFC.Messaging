@@ -17,16 +17,12 @@
     <Description>Biblioteca .NET para mensageria in-memory, ideal para cenários de testes, desenvolvimento e simulação de filas e tópicos sem dependências externas.</Description>
   </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="" />
-	</ItemGroup>
+  <ItemGroup>
+	<None Include="README.md" Pack="true" PackagePath="" />
+	<None Include="icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="icon.png" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-
-	<ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
   </ItemGroup>
 

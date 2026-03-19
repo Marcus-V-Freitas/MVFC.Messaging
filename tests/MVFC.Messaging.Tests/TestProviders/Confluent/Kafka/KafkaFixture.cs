@@ -4,9 +4,9 @@ public sealed class KafkaFixture : FixtureBaseTest<KafkaContainer>
 {
     public KafkaFixture()
     {
-        Container = new KafkaBuilder().Build();
+        _container = new KafkaBuilder("confluentinc/cp-kafka:7.5.12").Build();
     }
 
     public override string ConnectionString() =>
-        Container.GetBootstrapAddress();
+        _container.GetBootstrapAddress();
 }

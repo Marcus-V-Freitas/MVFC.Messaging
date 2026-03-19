@@ -17,20 +17,17 @@
 	<Description>Biblioteca .NET para integração com Apache Kafka via Confluent.Kafka, fornecendo abstrações para publicação e consumo de mensagens em tópicos de forma eficiente e escalável.</Description>
   </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Confluent.Kafka" Version="2.3.*" />
-	</ItemGroup>
+  <ItemGroup>
+	<None Include="README.md" Pack="true" PackagePath="" />
+	<None Include="icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="" />
-	</ItemGroup>
+  <ItemGroup>
+	<PackageReference Include="Confluent.Kafka" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="icon.png" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -11,34 +11,33 @@ public sealed class ServiceBusFixture : FixtureBaseTest<ServiceBusContainer>
                            .WithName("sb-emulator")
                            .Build();
 
-        _sqlContainer = new MsSqlBuilder()
-                                .WithImage("mcr.microsoft.com/azure-sql-edge:latest")
+        _sqlContainer = new MsSqlBuilder("mcr.microsoft.com/azure-sql-edge:latest")
                                 .WithPassword("Strong!Passw0rd")
                                 .WithNetwork(_network)
                                 .WithNetworkAliases("sql-edge")
                                 .Build();
 
-        Container = new ServiceBusBuilder()
+        _container = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest")
                                .WithMsSqlContainer(_network, _sqlContainer, "sql-edge", "Strong!Passw0rd")
                                .WithConfig(Path.Combine(Directory.GetCurrentDirectory(), "TestProviders", "Azure", "ServiceBus", "dados.json"))
                                .WithAcceptLicenseAgreement(true)
                                .Build();
     }
 
-    public override async Task InitializeAsync()
+    public override async ValueTask InitializeAsync()
     {
-        await _network.CreateAsync();
-        await _sqlContainer.StartAsync();
-        await Container.StartAsync();
+        await _network.CreateAsync().ConfigureAwait(false);
+        await _sqlContainer.StartAsync().ConfigureAwait(false);
+        await _container.StartAsync().ConfigureAwait(false);
     }
 
-    public override async Task DisposeAsync()
+    public override async ValueTask DisposeAsync()
     {
-        await Container.DisposeAsync();
-        await _sqlContainer.DisposeAsync();
-        await _network.DeleteAsync();
+        await _container.DisposeAsync().ConfigureAwait(false);
+        await _sqlContainer.DisposeAsync().ConfigureAwait(false);
+        await _network.DeleteAsync().ConfigureAwait(false);
     }
 
     public override string ConnectionString() =>
-        Container.GetConnectionString();
+        _container.GetConnectionString();
 }

@@ -3,17 +3,18 @@
 public abstract class MessagePublisherBase<T> : IMessagePublisher<T>
 {
     protected abstract Task PublishInternalAsync(T message, CancellationToken cancellationToken);
+
     protected abstract Task PublishBatchInternalAsync(IEnumerable<T> messages, CancellationToken cancellationToken);
 
     public async Task PublishAsync(T message, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
-        await PublishInternalAsync(message, cancellationToken);
+        await PublishInternalAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task PublishBatchAsync(IEnumerable<T> messages, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(messages);
-        await PublishBatchInternalAsync(messages, cancellationToken);
+        await PublishBatchInternalAsync(messages, cancellationToken).ConfigureAwait(false);
     }
 }

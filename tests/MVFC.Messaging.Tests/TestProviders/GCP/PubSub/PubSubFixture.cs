@@ -4,11 +4,10 @@ public sealed class PubSubFixture : FixtureBaseTest<PubSubContainer>
 {
     public PubSubFixture()
     {
-        Container = new PubSubBuilder()
-                         .WithImage("gcr.io/google.com/cloudsdktool/cloud-sdk:emulators")
+        _container = new PubSubBuilder("gcr.io/google.com/cloudsdktool/cloud-sdk:emulators")
                          .Build();
     }
 
     public override string ConnectionString() =>
-        Container.GetEmulatorEndpoint();
+        _container.GetEmulatorEndpoint();
 }

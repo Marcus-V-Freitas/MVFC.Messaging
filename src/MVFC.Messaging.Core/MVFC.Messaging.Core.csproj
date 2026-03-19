@@ -17,12 +17,9 @@
     <Description>Biblioteca .NET com as abstrações e contratos base para mensageria, facilitando a integração e implementação de provedores de mensagens de forma desacoplada e reutilizável.</Description>
   </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="icon.png" Pack="true" PackagePath="" />
-	</ItemGroup>
+  <ItemGroup>
+	<None Include="README.md" Pack="true" PackagePath="" />
+	<None Include="icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
 
 </Project>

@@ -1,17 +1,11 @@
 ﻿namespace MVFC.Messaging.Nats.IO.Nats;
 
-public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
+public sealed class NatsConsumer<T>(string url, string subject) : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private readonly NatsConnection _connection;
-    private readonly string _subject;
+    private readonly NatsConnection _connection = CreateNatsConnection(url);
+    private readonly string _subject = subject;
     private CancellationTokenSource? _cts;
     private Task? _consumeTask;
-
-    public NatsConsumer(string url, string subject)
-    {
-        _subject = subject;
-        _connection = CreateNatsConnection(url);
-    }
 
     private static NatsConnection CreateNatsConnection(string url)
     {
@@ -33,7 +27,7 @@ public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
         {
             await foreach (var natsMessage in SubscribeToSubjectAsync(cancellationToken))
             {
-                await ProcessNatsMessageAsync(natsMessage, cancellationToken);
+                await ProcessNatsMessageAsync(natsMessage, cancellationToken).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -59,7 +53,7 @@ public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
 
                 if (ShouldInvokeHandler(message))
                 {
-                    await Handler!(message!, cancellationToken);
+                    await Handler!(message!, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -73,20 +67,14 @@ public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
         }
     }
 
-    private static bool IsValidMessageData(string? data)
-    {
-        return !string.IsNullOrEmpty(data);
-    }
+    private static bool IsValidMessageData(string? data) =>
+        !string.IsNullOrEmpty(data);
 
-    private static T? DeserializeMessage(string messageData)
-    {
-        return JsonSerializer.Deserialize<T>(messageData);
-    }
+    private static T? DeserializeMessage(string messageData) =>
+        JsonSerializer.Deserialize<T>(messageData);
 
-    private bool ShouldInvokeHandler(T? message)
-    {
-        return Handler is not null && message is not null;
-    }
+    private bool ShouldInvokeHandler(T? message) =>
+        Handler is not null && message is not null;
 
     protected override Task StopInternalAsync(CancellationToken cancellationToken)
     {
@@ -96,14 +84,14 @@ public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await _cts!.CancelAsync();
+        await _cts!.CancelAsync().ConfigureAwait(false);
 
         if (_consumeTask is not null)
         {
-            await AwaitConsumeTaskCompletionAsync();
+            await AwaitConsumeTaskCompletionAsync().ConfigureAwait(false);
         }
 
-        await _connection.DisposeAsync();
+        await _connection.DisposeAsync().ConfigureAwait(false);
         _cts?.Dispose();
     }
 
@@ -111,7 +99,7 @@ public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
     {
         try
         {
-            await _consumeTask!;
+            await _consumeTask!.ConfigureAwait(false);
         }
         catch
         {

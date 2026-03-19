@@ -9,7 +9,7 @@ public sealed class SqsPublisher<T>(IAmazonSQS sqsClient, string queueUrl)
     protected override async Task PublishInternalAsync(T message, CancellationToken cancellationToken)
     {
         var request = CreateSendMessageRequest(message);
-        await _sqsClient.SendMessageAsync(request, cancellationToken);
+        await _sqsClient.SendMessageAsync(request, cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task PublishBatchInternalAsync(
@@ -17,7 +17,7 @@ public sealed class SqsPublisher<T>(IAmazonSQS sqsClient, string queueUrl)
         CancellationToken cancellationToken)
     {
         var request = CreateSendMessageBatchRequest(messages);
-        await _sqsClient.SendMessageBatchAsync(request, cancellationToken);
+        await _sqsClient.SendMessageBatchAsync(request, cancellationToken).ConfigureAwait(false);
     }
 
     private SendMessageRequest CreateSendMessageRequest(T message)

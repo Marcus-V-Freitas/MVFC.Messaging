@@ -2,7 +2,7 @@
 
 public sealed class RedisStreamPublisher<T> : MessagePublisherBase<T>, IAsyncDisposable
 {
-    private const string DataFieldName = "data";
+    private const string DATA_FIELD_NAME = "data";
 
     private readonly ConnectionMultiplexer _redis;
     private readonly IDatabase _db;
@@ -18,7 +18,7 @@ public sealed class RedisStreamPublisher<T> : MessagePublisherBase<T>, IAsyncDis
     protected override async Task PublishInternalAsync(T message, CancellationToken cancellationToken)
     {
         var streamEntry = CreateStreamEntry(message);
-        await _db.StreamAddAsync(_streamKey, streamEntry);
+        await _db.StreamAddAsync(_streamKey, streamEntry).ConfigureAwait(false);
     }
 
     protected override async Task PublishBatchInternalAsync(
@@ -26,7 +26,7 @@ public sealed class RedisStreamPublisher<T> : MessagePublisherBase<T>, IAsyncDis
         CancellationToken cancellationToken)
     {
         var publishTasks = CreatePublishTasks(messages, cancellationToken);
-        await Task.WhenAll(publishTasks);
+        await Task.WhenAll(publishTasks).ConfigureAwait(false);
     }
 
     private IEnumerable<Task> CreatePublishTasks(
@@ -37,22 +37,18 @@ public sealed class RedisStreamPublisher<T> : MessagePublisherBase<T>, IAsyncDis
     private static NameValueEntry[] CreateStreamEntry(T message)
     {
         var messageData = SerializeMessage(message);
-        return [new NameValueEntry(DataFieldName, messageData)];
+        return [new NameValueEntry(DATA_FIELD_NAME, messageData)];
     }
 
-    private static string SerializeMessage(T message)
-    {
-        return JsonSerializer.Serialize(message);
-    }
+    private static string SerializeMessage(T message) =>
+        JsonSerializer.Serialize(message);
 
-    public async ValueTask DisposeAsync()
-    {
-        await CloseRedisConnectionAsync();
-    }
+    public async ValueTask DisposeAsync() =>
+        await CloseRedisConnectionAsync().ConfigureAwait(false);
 
     private async Task CloseRedisConnectionAsync()
     {
-        await _redis.CloseAsync();
-        await _redis.DisposeAsync();
+        await _redis.CloseAsync().ConfigureAwait(false);
+        await _redis.DisposeAsync().ConfigureAwait(false);
     }
 }

@@ -25,18 +25,20 @@ public sealed class ServiceBusPublisher<T>
     protected override async Task PublishInternalAsync(T message, CancellationToken cancellationToken)
     {
         var busMessage = CreateServiceBusMessage(message);
-        await _sender.SendMessageAsync(busMessage, cancellationToken);
+        await _sender.SendMessageAsync(busMessage, cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task PublishBatchInternalAsync(
         IEnumerable<T> messages,
         CancellationToken cancellationToken)
     {
-        using var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken);
+        ArgumentNullException.ThrowIfNull(messages);
+
+        using var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
         AddMessagesToBatch(messages, messageBatch);
 
-        await _sender.SendMessagesAsync(messageBatch, cancellationToken);
+        await _sender.SendMessagesAsync(messageBatch, cancellationToken).ConfigureAwait(false);
     }
 
     private static void AddMessagesToBatch(IEnumerable<T> messages, ServiceBusMessageBatch messageBatch)
@@ -64,7 +66,7 @@ public sealed class ServiceBusPublisher<T>
 
     public async ValueTask DisposeAsync()
     {
-        await _sender.DisposeAsync();
-        await _client.DisposeAsync();
+        await _sender.DisposeAsync().ConfigureAwait(false);
+        await _client.DisposeAsync().ConfigureAwait(false);
     }
 }

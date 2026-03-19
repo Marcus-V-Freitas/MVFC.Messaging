@@ -2,9 +2,9 @@
 
 public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private const int ReadCount = 10;
-    private const int PollingDelayMilliseconds = 100;
-    private const string DataFieldName = "data";
+    private const int READ_COUNT = 10;
+    private const int POLLING_DELAY_MILLISECONDS = 100;
+    private const string DATA_FIELD_NAME = "data";
 
     private readonly ConnectionMultiplexer _redis;
     private readonly IDatabase _db;
@@ -24,13 +24,11 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
     }
 
     private static string GenerateConsumerName()
-    {
-        return Guid.NewGuid().ToString();
-    }
+        => Guid.NewGuid().ToString();
 
     protected override async Task StartInternalAsync(CancellationToken cancellationToken)
     {
-        await EnsureConsumerGroupExistsAsync();
+        await EnsureConsumerGroupExistsAsync().ConfigureAwait(false);
 
         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _consumeTask = Task.Run(() => ExecuteConsumeLoopAsync(_cts.Token), _cts.Token);
@@ -43,9 +41,9 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
             await _db.StreamCreateConsumerGroupAsync(
                 _streamKey,
                 _consumerGroup,
-                StreamPosition.NewMessages);
+                StreamPosition.NewMessages).ConfigureAwait(false);
         }
-        catch (RedisServerException ex) when (ex.Message.Contains("BUSYGROUP"))
+        catch (RedisServerException ex) when (ex.Message.Contains("BUSYGROUP", StringComparison.OrdinalIgnoreCase))
         {
             // Consumer group already exists; ignore the exception.
         }
@@ -57,7 +55,7 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
         {
             try
             {
-                await ReadAndProcessMessagesAsync(cancellationToken);
+                await ReadAndProcessMessagesAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -68,17 +66,17 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
 
     private async Task ReadAndProcessMessagesAsync(CancellationToken cancellationToken)
     {
-        var streamEntries = await ReadMessagesFromStreamAsync();
+        var streamEntries = await ReadMessagesFromStreamAsync().ConfigureAwait(false);
 
         if (streamEntries.Length == 0)
         {
-            await Task.Delay(PollingDelayMilliseconds, cancellationToken);
+            await Task.Delay(POLLING_DELAY_MILLISECONDS, cancellationToken).ConfigureAwait(false);
             return;
         }
 
         foreach (var entry in streamEntries)
         {
-            await ProcessStreamEntryAsync(entry, cancellationToken);
+            await ProcessStreamEntryAsync(entry, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -89,7 +87,7 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
             _consumerGroup,
             _consumerName,
             StreamPosition.NewMessages,
-            count: ReadCount);
+            count: READ_COUNT).ConfigureAwait(false);
     }
 
     private async Task ProcessStreamEntryAsync(StreamEntry entry, CancellationToken cancellationToken)
@@ -104,10 +102,10 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
 
                 if (ShouldInvokeHandler(message))
                 {
-                    await Handler!(message!, cancellationToken);
+                    await Handler!(message!, cancellationToken).ConfigureAwait(false);
                 }
 
-                await AcknowledgeMessageAsync(entry.Id);
+                await AcknowledgeMessageAsync(entry.Id).ConfigureAwait(false);
             }
         }
         catch
@@ -117,7 +115,7 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
     }
 
     private static RedisValue ExtractMessageData(StreamEntry entry) => 
-        entry.Values.FirstOrDefault(x => x.Name == DataFieldName).Value;
+        entry.Values.FirstOrDefault(x => x.Name == DATA_FIELD_NAME).Value;
 
     private static bool IsValidMessageData(RedisValue data) => 
         !data.IsNullOrEmpty;
@@ -125,15 +123,11 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
     private static T? DeserializeMessage(RedisValue messageData) => 
         JsonSerializer.Deserialize<T>(messageData.ToString());
 
-    private bool ShouldInvokeHandler(T? message)
-    {
-        return Handler is not null && message is not null;
-    }
+    private bool ShouldInvokeHandler(T? message) =>
+        Handler is not null && message is not null;
 
-    private async Task AcknowledgeMessageAsync(RedisValue messageId)
-    {
-        await _db.StreamAcknowledgeAsync(_streamKey, _consumerGroup, messageId);
-    }
+    private async Task AcknowledgeMessageAsync(RedisValue messageId) =>
+        await _db.StreamAcknowledgeAsync(_streamKey, _consumerGroup, messageId).ConfigureAwait(false);
 
     protected override Task StopInternalAsync(CancellationToken cancellationToken)
     {
@@ -143,14 +137,14 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
 
     public async ValueTask DisposeAsync()
     {
-        await _cts!.CancelAsync();
+        await _cts!.CancelAsync().ConfigureAwait(false);
 
         if (_consumeTask is not null)
         {
-            await AwaitConsumeTaskCompletionAsync();
+            await AwaitConsumeTaskCompletionAsync().ConfigureAwait(false);
         }
 
-        await CloseRedisConnectionAsync();
+        await CloseRedisConnectionAsync().ConfigureAwait(false);
         _cts?.Dispose();
     }
 
@@ -158,7 +152,7 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
     {
         try
         {
-            await _consumeTask!;
+            await _consumeTask!.ConfigureAwait(false);
         }
         catch
         {
@@ -168,7 +162,7 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
 
     private async Task CloseRedisConnectionAsync()
     {
-        await _redis.CloseAsync();
-        await _redis.DisposeAsync();
+        await _redis.CloseAsync().ConfigureAwait(false);
+        await _redis.DisposeAsync().ConfigureAwait(false);
     }
 }

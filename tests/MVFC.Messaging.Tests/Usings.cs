@@ -5,7 +5,6 @@ global using Google.Api.Gax;
 global using Google.Cloud.PubSub.V1;
 global using Grpc.Core;
 global using MVFC.Messaging.GCP.PubSub;
-global using Xunit.Abstractions;
 global using Testcontainers.PubSub;
 global using Testcontainers.LocalStack;
 global using MVFC.Messaging.Nats.IO.Nats;

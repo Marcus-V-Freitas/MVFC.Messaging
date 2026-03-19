@@ -3,8 +3,8 @@
 public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
     : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private const int MaxMessagesPerRequest = 10;
-    private const int WaitTimeSeconds = 5;
+    private const int MAX_MESSAGES_PER_REQUEST = 10;
+    private const int WAIT_TIME_SECONDS = 5;
 
     private readonly IAmazonSQS _sqsClient = sqsClient;
     private readonly string _queueUrl = queueUrl;
@@ -25,7 +25,7 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
         {
             try
             {
-                await PollAndProcessMessagesAsync(cancellationToken);
+                await PollAndProcessMessagesAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -37,11 +37,11 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
     private async Task PollAndProcessMessagesAsync(CancellationToken cancellationToken)
     {
         var request = CreateReceiveMessageRequest();
-        var response = await _sqsClient.ReceiveMessageAsync(request, cancellationToken);
+        var response = await _sqsClient.ReceiveMessageAsync(request, cancellationToken).ConfigureAwait(false);
 
         foreach (var sqsMessage in response.Messages)
         {
-            await ProcessSingleMessageAsync(sqsMessage, cancellationToken);
+            await ProcessSingleMessageAsync(sqsMessage, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -50,8 +50,8 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
         return new ReceiveMessageRequest
         {
             QueueUrl = _queueUrl,
-            MaxNumberOfMessages = MaxMessagesPerRequest,
-            WaitTimeSeconds = WaitTimeSeconds
+            MaxNumberOfMessages = MAX_MESSAGES_PER_REQUEST,
+            WaitTimeSeconds = WAIT_TIME_SECONDS
         };
     }
 
@@ -63,10 +63,10 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
 
             if (ShouldInvokeHandler(message))
             {
-                await Handler!(message!, cancellationToken);
+                await Handler!(message!, cancellationToken).ConfigureAwait(false);
             }
 
-            await DeleteMessageAsync(sqsMessage.ReceiptHandle, cancellationToken);
+            await DeleteMessageAsync(sqsMessage.ReceiptHandle, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception)
         {
@@ -81,15 +81,15 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
         Handler is not null && message is not null;
 
     private async Task DeleteMessageAsync(string receiptHandle, CancellationToken cancellationToken) => 
-        await _sqsClient.DeleteMessageAsync(_queueUrl, receiptHandle, cancellationToken);
+        await _sqsClient.DeleteMessageAsync(_queueUrl, receiptHandle, cancellationToken).ConfigureAwait(false);
 
     protected override async Task StopInternalAsync(CancellationToken cancellationToken)
     {
-        await _cts!.CancelAsync();
+        await _cts!.CancelAsync().ConfigureAwait(false);
 
         if (_pollingTask is not null)
         {
-            await AwaitPollingTaskCompletionAsync();
+            await AwaitPollingTaskCompletionAsync().ConfigureAwait(false);
         }
 
         _cts?.Dispose();
@@ -99,7 +99,7 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
     {
         try
         {
-            await _pollingTask!;
+            await _pollingTask!.ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {

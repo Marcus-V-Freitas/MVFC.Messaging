@@ -18,19 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NATS.Client.Core" Version="2.4.*" />
+	<None Include="README.md" Pack="true" PackagePath="" />
+	<None Include="icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NATS.Client.Core" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="icon.png" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-	<ItemGroup>
-        <ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MVFC.Messaging.Core\MVFC.Messaging.Core.csproj" />
+  </ItemGroup>
 
 </Project>

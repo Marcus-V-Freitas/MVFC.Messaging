@@ -36,7 +36,7 @@ public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, stri
         {
             try
             {
-                await ConsumeAndProcessMessageAsync(cancellationToken);
+                await ConsumeAndProcessMessageAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -55,7 +55,7 @@ public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, stri
 
         if (IsValidConsumeResult(consumeResult))
         {
-            await ProcessMessageAsync(consumeResult, cancellationToken);
+            await ProcessMessageAsync(consumeResult, cancellationToken).ConfigureAwait(false);
             CommitOffset(consumeResult);
         }
     }
@@ -71,7 +71,7 @@ public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, stri
 
         if (ShouldInvokeHandler(message))
         {
-            await Handler!(message!, cancellationToken);
+            await Handler!(message!, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -92,11 +92,11 @@ public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, stri
 
     public async ValueTask DisposeAsync()
     {
-        await _cts!.CancelAsync();
+        await _cts!.CancelAsync().ConfigureAwait(false);
 
         if (_consumeTask is not null)
         {
-            await AwaitConsumeTaskCompletionAsync();
+            await AwaitConsumeTaskCompletionAsync().ConfigureAwait(false);
         }
 
         CloseAndDisposeConsumer();
@@ -107,7 +107,7 @@ public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, stri
     {
         try
         {
-            await _consumeTask!;
+            await _consumeTask!.ConfigureAwait(false);
         }
         catch
         {

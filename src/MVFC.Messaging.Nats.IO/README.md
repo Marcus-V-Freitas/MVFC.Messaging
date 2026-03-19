@@ -1,88 +1,184 @@
-# MVFC.Messaging.NatsIO
+# MVFC.Messaging.Nats.IO
 
-Biblioteca para integração simplificada com NATS.io, utilizando padrões modernos de C#.
+> 🇧🇷 [Leia em Português](README.pt-br.md)
 
-## Instalação
+[![CI](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml/badge.svg)](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging/branch/master/graph/badge.svg)](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+![Platform](https://img.shields.io/badge/.NET-10-blue)
+![NuGet Version](https://img.shields.io/nuget/v/MVFC.Messaging.Nats.IO)
+![NuGet Downloads](https://img.shields.io/nuget/dt/MVFC.Messaging.Nats.IO)
 
-Adicione o pacote via NuGet:
+A .NET messaging provider for **[NATS](https://nats.io/)**, built on top of [MVFC.Messaging.Core](../MVFC.Messaging.Core/README.md). Provides `NatsPublisher<T>` and `NatsConsumer<T>` for publishing and consuming JSON-serialized messages on NATS subjects with the official [NATS.Client.Core](https://github.com/nats-io/nats.net) library.
+
+## Package
+
+| Package | Downloads |
+|---|---|
+| [MVFC.Messaging.Nats.IO](https://www.nuget.org/packages/MVFC.Messaging.Nats.IO) | ![Downloads](https://img.shields.io/nuget/dt/MVFC.Messaging.Nats.IO) |
+
+## Installation
 
 ```sh
-dotnet add package MVFC.Messaging.NatsIO
+dotnet add package MVFC.Messaging.Nats.IO
 ```
 
-## Configuração
+This package depends on `MVFC.Messaging.Core` (installed automatically) and `NATS.Client.Core`.
 
-Configure sua conexão NATS via string de conexão (exemplo: `nats://localhost:4222`).  
-Para testes locais, utilize o [NATS Server](https://docs.nats.io/running-a-nats-service/introduction) ou Docker.
+## Configuration
 
-## Uso Básico
+### NATS Server URL
 
-### Publicando e Consumindo uma Mensagem
+Both `NatsPublisher<T>` and `NatsConsumer<T>` accept a **URL** and a **subject** name. The URL points to your NATS server:
 
-```csharp
-using MVFC.Messaging.NatsIO.Nats;
-
-const string subject = "test.subject";
-var connectionString = "<sua-connection-string-nats>";
-
-await using var publisher = new NatsPublisher<TestMessage>(connectionString, subject);
-await using var consumer = new NatsConsumer<TestMessage>(connectionString, subject);
-
-var tcs = new TaskCompletionSource<TestMessage>();
-await consumer.StartAsync(async (msg, ct) =>
-{
-    Console.WriteLine($"Recebido: {msg.Content}");
-    tcs.SetResult(msg);
-}, CancellationToken.None);
-
-await Task.Delay(1000); // Aguarda o consumidor inicializar
-
-var sentMessage = new TestMessage { Id = 1, Content = "NATS Test" };
-await publisher.PublishAsync(sentMessage, CancellationToken.None);
-
-var receivedMessage = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10));
-
-await consumer.StopAsync();
+```
+nats://localhost:4222
+nats://user:password@nats-server:4222
 ```
 
-### Publicando e Consumindo Mensagens em Lote
+### Subjects
+
+NATS uses a flat, string-based subject hierarchy (e.g. `orders.created`, `orders.>`). You provide the subject to both publisher and consumer — matching subjects allows messages to flow.
+
+### appsettings.json Example
+
+```json
+{
+  "Nats": {
+    "Url": "nats://localhost:4222",
+    "Subject": "orders.created"
+  }
+}
+```
 
 ```csharp
-const string subject = "test.batch.subject";
-var connectionString = "<sua-connection-string-nats>";
+var url = builder.Configuration["Nats:Url"]!;
+var subject = builder.Configuration["Nats:Subject"]!;
+```
 
-await using var publisher = new NatsPublisher<TestMessage>(connectionString, subject);
-await using var consumer = new NatsConsumer<TestMessage>(connectionString, subject);
+## Usage
 
-var receivedMessages = new List<TestMessage>();
-var tcs = new TaskCompletionSource<bool>();
+### Publishing a Single Message
 
-await consumer.StartAsync(async (msg, ct) =>
+```csharp
+using MVFC.Messaging.Nats.IO.Nats;
+
+var url = "nats://localhost:4222";
+var subject = "orders.created";
+
+await using var publisher = new NatsPublisher<OrderCreated>(url, subject);
+
+var order = new OrderCreated(1, "Keyboard", 149.90m);
+await publisher.PublishAsync(order);
+```
+
+The message is serialized to JSON and published to the NATS subject.
+
+### Publishing a Batch
+
+Batch publishing sends all messages concurrently using `Task.WhenAll`:
+
+```csharp
+var orders = new[]
 {
-    lock (receivedMessages)
-    {
-        receivedMessages.Add(msg);
-        Console.WriteLine($"Recebido {receivedMessages.Count}: {msg.Content}");
-        if (receivedMessages.Count == 3)
-            tcs.SetResult(true);
-    }
-}, CancellationToken.None);
-
-await Task.Delay(1000);
-
-var messages = new[]
-{
-    new TestMessage { Id = 1, Content = "NATS Batch 1" },
-    new TestMessage { Id = 2, Content = "NATS Batch 2" },
-    new TestMessage { Id = 3, Content = "NATS Batch 3" }
+    new OrderCreated(1, "Keyboard", 149.90m),
+    new OrderCreated(2, "Mouse", 59.90m),
+    new OrderCreated(3, "Monitor", 899.00m)
 };
 
-await publisher.PublishBatchAsync(messages, CancellationToken.None);
-await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10));
+await publisher.PublishBatchAsync(orders);
+```
+
+### Consuming Messages
+
+The consumer subscribes to the NATS subject and runs a background loop that yields messages as they arrive:
+
+```csharp
+using MVFC.Messaging.Nats.IO.Nats;
+
+var url = "nats://localhost:4222";
+var subject = "orders.created";
+
+await using var consumer = new NatsConsumer<OrderCreated>(url, subject);
+
+await consumer.StartAsync(async (message, ct) =>
+{
+    Console.WriteLine($"Processing order #{message.OrderId}: {message.Product}");
+    // Your business logic here
+}, cancellationToken);
+
+// ... later, when shutting down:
 await consumer.StopAsync();
 ```
 
-## Recursos
+**Consumer behavior:**
+- Uses `NatsConnection.SubscribeAsync<string>` to receive messages as an async stream.
+- Messages with null or empty data are skipped.
+- Each valid message is deserialized from JSON and passed to the handler.
+- `OperationCanceledException` in the handler is re-thrown for proper cancellation propagation; other exceptions are caught to avoid breaking the consume loop.
+- `DisposeAsync` cancels the consume loop, waits for completion, and disposes the NATS connection.
 
-- **NatsPublisher**: Publica mensagens (simples ou em lote) em um subject NATS.
-- **NatsConsumer**: Consome mensagens de um subject NATS de forma assíncrona.
+### Complete Publish + Consume Example
+
+```csharp
+using MVFC.Messaging.Nats.IO.Nats;
+
+var url = "nats://localhost:4222";
+var subject = "orders.created";
+
+await using var publisher = new NatsPublisher<OrderCreated>(url, subject);
+await using var consumer = new NatsConsumer<OrderCreated>(url, subject);
+
+// Start consuming
+var received = new TaskCompletionSource<OrderCreated>();
+await consumer.StartAsync(async (msg, ct) =>
+{
+    Console.WriteLine($"Received: Order #{msg.OrderId} — {msg.Product}");
+    received.SetResult(msg);
+}, CancellationToken.None);
+
+// Publish
+await publisher.PublishAsync(new OrderCreated(42, "Keyboard", 149.90m));
+
+// Wait for the message to be consumed
+var result = await received.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+// Cleanup
+await consumer.StopAsync();
+```
+
+## API Reference
+
+### NatsPublisher\<T\>
+
+| Constructor | Parameters |
+|---|---|
+| `NatsPublisher<T>(string url, string subject)` | NATS server URL and the target subject |
+
+| Method | Description |
+|---|---|
+| `PublishAsync(T message, CancellationToken ct)` | Serializes the message to JSON and publishes to the subject |
+| `PublishBatchAsync(IEnumerable<T> messages, CancellationToken ct)` | Publishes all messages concurrently |
+| `DisposeAsync()` | Disposes the underlying `NatsConnection` |
+
+### NatsConsumer\<T\>
+
+| Constructor | Parameters |
+|---|---|
+| `NatsConsumer<T>(string url, string subject)` | NATS server URL and the subject to subscribe to |
+
+| Method | Description |
+|---|---|
+| `StartAsync(Func<T, CancellationToken, Task> handler, CancellationToken ct)` | Subscribes to the subject and starts the consume loop |
+| `StopAsync(CancellationToken ct)` | Cancels the consume loop |
+| `DisposeAsync()` | Cancels, waits for completion, and disposes the connection |
+
+## Requirements
+
+- .NET 10.0+
+- `NATS.Client.Core` (installed automatically)
+- A running NATS server (or Docker: `docker run -p 4222:4222 nats`)
+
+## License
+
+[Apache-2.0](../../LICENSE)

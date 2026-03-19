@@ -3,13 +3,16 @@
 public abstract class FixtureBaseTest<T> : IAsyncLifetime
     where T : IContainer
 {
-    protected T Container = default!;
+    protected T _container = default!;
 
     public abstract string ConnectionString();
 
-    public virtual async Task InitializeAsync() =>
-        await Container.StartAsync();
+    public virtual async ValueTask InitializeAsync() =>
+        await _container.StartAsync().ConfigureAwait(false);
 
-    public virtual async Task DisposeAsync() =>
-        await Container.DisposeAsync();
+    public virtual async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        await _container.DisposeAsync().ConfigureAwait(false);
+    }        
 }

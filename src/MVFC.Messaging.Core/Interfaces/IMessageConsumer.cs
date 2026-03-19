@@ -2,6 +2,7 @@
 
 public interface IMessageConsumer<T>
 {
-    Task StartAsync(Func<T, CancellationToken, Task> messageHandler, CancellationToken cancellationToken = default);
-    Task StopAsync(CancellationToken cancellationToken = default);
+    public Task StartAsync(Func<T, CancellationToken, Task> messageHandler, CancellationToken cancellationToken = default);
+
+    public Task StopAsync(CancellationToken cancellationToken = default);
 }

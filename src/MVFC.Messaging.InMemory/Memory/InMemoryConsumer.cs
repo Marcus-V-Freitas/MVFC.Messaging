@@ -16,37 +16,33 @@ public sealed class InMemoryConsumer<T>(Channel<T> channel) : MessageConsumerBas
 
     private async Task ExecuteConsumerLoopAsync(CancellationToken cancellationToken)
     {
-        await foreach (var message in ReadMessagesAsync(cancellationToken))
+        await foreach (var message in ReadMessagesAsync(cancellationToken).ConfigureAwait(false))
         {
-            await ProcessMessageAsync(message, cancellationToken);
+            await ProcessMessageAsync(message, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    private IAsyncEnumerable<T> ReadMessagesAsync(CancellationToken cancellationToken)
-    {
-        return _channel.Reader.ReadAllAsync(cancellationToken);
-    }
+    private IAsyncEnumerable<T> ReadMessagesAsync(CancellationToken cancellationToken) =>
+        _channel.Reader.ReadAllAsync(cancellationToken);
 
     private async Task ProcessMessageAsync(T message, CancellationToken cancellationToken)
     {
         if (ShouldInvokeHandler())
         {
-            await Handler!(message, cancellationToken);
+            await Handler!(message, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    private bool ShouldInvokeHandler()
-    {
-        return Handler is not null;
-    }
+    private bool ShouldInvokeHandler() =>
+        Handler is not null;
 
     protected override async Task StopInternalAsync(CancellationToken cancellationToken)
     {
-        await _cts!.CancelAsync();
+        await _cts!.CancelAsync().ConfigureAwait(false);
 
         if (_consumerTask is not null)
         {
-            await AwaitConsumerTaskCompletionAsync();
+            await AwaitConsumerTaskCompletionAsync().ConfigureAwait(false);
         }
     }
 
@@ -54,7 +50,7 @@ public sealed class InMemoryConsumer<T>(Channel<T> channel) : MessageConsumerBas
     {
         try
         {
-            await _consumerTask!;
+            await _consumerTask!.ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -64,11 +60,11 @@ public sealed class InMemoryConsumer<T>(Channel<T> channel) : MessageConsumerBas
 
     public async ValueTask DisposeAsync()
     {
-        await _cts!.CancelAsync();
+        await _cts!.CancelAsync().ConfigureAwait(false);
 
         if (_consumerTask is not null)
         {
-            await AwaitConsumerTaskCompletionSafelyAsync();
+            await AwaitConsumerTaskCompletionSafelyAsync().ConfigureAwait(false);
         }
 
         _cts?.Dispose();
@@ -78,7 +74,7 @@ public sealed class InMemoryConsumer<T>(Channel<T> channel) : MessageConsumerBas
     {
         try
         {
-            await _consumerTask!;
+            await _consumerTask!.ConfigureAwait(false);
         }
         catch
         {

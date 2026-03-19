@@ -6,6 +6,27 @@
         "Queues": [
           {
             "Name": "queue.1"
+          },
+          {
+            "Name": "queue.single"
+          },
+          {
+            "Name": "queue.batch"
+          },
+          {
+            "Name": "queue.exception"
+          },
+          {
+            "Name": "dispose.queue"
+          },
+          {
+            "Name": "dispose.queue.twice"
+          },
+          {
+            "Name": "null.queue"
+          },
+          {
+            "Name": "queue.batch.full"
           }
         ],
         "Topics": []

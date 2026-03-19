@@ -1,29 +1,19 @@
-<Project>
+﻿<Project>
 	<PropertyGroup>
-		<!-- Força warnings como erros -->
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-
-		<!-- Análise focada em qualidade, não estilo -->
-		<AnalysisLevel>latest</AnalysisLevel>
-		<AnalysisMode>Minimum</AnalysisMode>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-
-		<!-- DESABILITA análise de estilo no build -->
-		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-
-		<!-- Nullable para prevenir NullReferenceException -->
-		<Nullable>enable</Nullable>
-
-		<!-- Configurações básicas -->
-		<LangVersion>latest</LangVersion>
-		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<!-- APENAS SonarAnalyzer - foca em bugs e code smells -->
-		<PackageReference Include="SonarAnalyzer.CSharp" Version="10.3.*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+	<PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+    <Authors>Marcus V. Freitas</Authors>
+    <Company>MVFC</Company>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Marcus-V-Freitas/MVFC.Messaging</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Marcus-V-Freitas/MVFC.Messaging</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 </Project>

@@ -2,7 +2,7 @@
 
 public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private const int StartupDelayMilliseconds = 1000;
+    private const int STARTUP_DELAY_MILLISECONDS = 1000;
 
     private readonly SubscriberClient _subscriber = CreateSubscriberClient(projectId, subscriptionId);
     private Task? _subscriberTask;
@@ -21,7 +21,7 @@ public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) :
     protected override async Task StartInternalAsync(CancellationToken cancellationToken)
     {
         _subscriberTask = _subscriber.StartAsync(HandleMessageAsync);
-        await AwaitSubscriberInitializationAsync(cancellationToken);
+        await AwaitSubscriberInitializationAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<SubscriberClient.Reply> HandleMessageAsync(
@@ -30,7 +30,7 @@ public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) :
     {
         try
         {
-            return await ProcessMessageAsync(pubsubMessage, cancellationToken);
+            return await ProcessMessageAsync(pubsubMessage, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception)
         {
@@ -46,7 +46,7 @@ public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) :
 
         if (ShouldInvokeHandler(message))
         {
-            await Handler!(message!, cancellationToken);
+            await Handler!(message!, cancellationToken).ConfigureAwait(false);
         }
 
         return SubscriberClient.Reply.Ack;
@@ -58,23 +58,19 @@ public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) :
         return JsonSerializer.Deserialize<T>(messageData);
     }
 
-    private bool ShouldInvokeHandler(T? message)
-    {
-        return Handler is not null && message is not null;
-    }
+    private bool ShouldInvokeHandler(T? message) =>
+        Handler is not null && message is not null;
 
-    private static async Task AwaitSubscriberInitializationAsync(CancellationToken cancellationToken)
-    {
-        await Task.Delay(StartupDelayMilliseconds, cancellationToken);
-    }
+    private static async Task AwaitSubscriberInitializationAsync(CancellationToken cancellationToken) =>
+        await Task.Delay(STARTUP_DELAY_MILLISECONDS, cancellationToken).ConfigureAwait(false);
 
     protected override async Task StopInternalAsync(CancellationToken cancellationToken)
     {
-        await _subscriber.StopAsync(cancellationToken);
+        await _subscriber.StopAsync(cancellationToken).ConfigureAwait(false);
 
         if (_subscriberTask is not null)
         {
-            await AwaitSubscriberTaskCompletionAsync();
+            await AwaitSubscriberTaskCompletionAsync().ConfigureAwait(false);
         }
     }
 
@@ -82,7 +78,7 @@ public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) :
     {
         try
         {
-            await _subscriberTask!;
+            await _subscriberTask!.ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -92,24 +88,22 @@ public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) :
 
     public async ValueTask DisposeAsync()
     {
-        await StopSubscriberAsync();
+        await StopSubscriberAsync().ConfigureAwait(false);
 
         if (_subscriberTask is not null)
         {
-            await AwaitSubscriberTaskCompletionSafelyAsync();
+            await AwaitSubscriberTaskCompletionSafelyAsync().ConfigureAwait(false);
         }
     }
 
-    private async Task StopSubscriberAsync()
-    {
-        await _subscriber.StopAsync(CancellationToken.None);
-    }
+    private async Task StopSubscriberAsync() =>
+        await _subscriber.StopAsync(CancellationToken.None).ConfigureAwait(false);
 
     private async Task AwaitSubscriberTaskCompletionSafelyAsync()
     {
         try
         {
-            await _subscriberTask!;
+            await _subscriberTask!.ConfigureAwait(false);
         }
         catch
         {

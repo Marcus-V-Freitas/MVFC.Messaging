@@ -3,51 +3,62 @@
 public sealed class RabbitMqPublisher<T> : MessagePublisherBase<T>, IAsyncDisposable
 {
     private readonly IConnection _connection;
-    private readonly IModel _channel;
+    private readonly IChannel _channel;
     private readonly string _queueName;
 
-    public RabbitMqPublisher(string connectionString, string queueName)
+    private RabbitMqPublisher(IConnection connection, IChannel channel, string queueName)
     {
+        _connection = connection;
+        _channel = channel;
         _queueName = queueName;
-        _connection = CreateConnection(connectionString);
-        _channel = _connection.CreateModel();
-
-        ConfigureQueue();
     }
 
-    private static IConnection CreateConnection(string connectionString)
+    public static async Task<RabbitMqPublisher<T>> CreateAsync(
+        string connectionString,
+        string queueName)
+    {
+        var connection = await CreateConnectionAsync(connectionString).ConfigureAwait(false);
+        var channel = await connection.CreateChannelAsync().ConfigureAwait(false);
+
+        var publisher = new RabbitMqPublisher<T>(connection, channel, queueName);
+        await publisher.ConfigureQueueAsync().ConfigureAwait(false);
+
+        return publisher;
+    }
+
+    private static async Task<IConnection> CreateConnectionAsync(string connectionString)
     {
         var factory = new ConnectionFactory { Uri = new Uri(connectionString) };
-        return factory.CreateConnection();
+        return await factory.CreateConnectionAsync().ConfigureAwait(false);
     }
 
-    private void ConfigureQueue()
+    private async Task ConfigureQueueAsync()
     {
-        _channel.QueueDeclare(
+        await _channel.QueueDeclareAsync(
             queue: _queueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
-            arguments: null);
+            arguments: null).ConfigureAwait(false);
     }
 
-    protected override Task PublishInternalAsync(T message, CancellationToken cancellationToken)
+    protected override async Task PublishInternalAsync(T message, CancellationToken cancellationToken)
     {
         var messageBody = SerializeMessage(message);
         var properties = CreatePersistentProperties();
 
-        PublishMessage(messageBody, properties);
-
-        return Task.CompletedTask;
+        await PublishMessageAsync(messageBody, properties, cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task PublishBatchInternalAsync(
         IEnumerable<T> messages,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(messages);
+
         foreach (var message in messages)
         {
-            await PublishInternalAsync(message, cancellationToken);
+            await PublishInternalAsync(message, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -57,39 +68,41 @@ public sealed class RabbitMqPublisher<T> : MessagePublisherBase<T>, IAsyncDispos
         return Encoding.UTF8.GetBytes(json);
     }
 
-    private IBasicProperties CreatePersistentProperties()
-    {
-        var properties = _channel.CreateBasicProperties();
-        properties.Persistent = true;
-        return properties;
-    }
+    private static BasicProperties CreatePersistentProperties() =>
+        new()
+        {
+            Persistent = true,
+        };
 
-    private void PublishMessage(byte[] messageBody, IBasicProperties properties)
+    private async Task PublishMessageAsync(
+        byte[] messageBody,
+        BasicProperties properties,
+        CancellationToken cancellationToken)
     {
-        _channel.BasicPublish(
+        await _channel.BasicPublishAsync(
             exchange: "",
             routingKey: _queueName,
+            mandatory: false,
             basicProperties: properties,
-            body: messageBody);
+            body: messageBody,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        CloseAndDisposeChannel();
-        CloseAndDisposeConnection();
-
-        return ValueTask.CompletedTask;
+        await CloseAndDisposeChannelAsync().ConfigureAwait(false);
+        await CloseAndDisposeConnectionAsync().ConfigureAwait(false);
     }
 
-    private void CloseAndDisposeChannel()
+    private async Task CloseAndDisposeChannelAsync()
     {
-        _channel?.Close();
-        _channel?.Dispose();
+        await _channel.CloseAsync().ConfigureAwait(false);
+        _channel.Dispose();
     }
 
-    private void CloseAndDisposeConnection()
+    private async Task CloseAndDisposeConnectionAsync()
     {
-        _connection?.Close();
-        _connection?.Dispose();
+        await _connection.CloseAsync().ConfigureAwait(false);
+        _connection.Dispose();
     }
 }

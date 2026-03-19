@@ -45,10 +45,10 @@ public sealed class ServiceBusConsumer<T>
 
         if (ShouldInvokeHandler(message))
         {
-            await Handler!(message!, args.CancellationToken);
+            await Handler!(message!, args.CancellationToken).ConfigureAwait(false);
         }
 
-        await CompleteMessageAsync(args);
+        await CompleteMessageAsync(args).ConfigureAwait(false);
     }
 
     private static T? DeserializeMessage(ServiceBusReceivedMessage receivedMessage)
@@ -57,13 +57,11 @@ public sealed class ServiceBusConsumer<T>
         return JsonSerializer.Deserialize<T>(json);
     }
 
-    private bool ShouldInvokeHandler(T? message)
-    {
-        return Handler is not null && message is not null;
-    }
+    private bool ShouldInvokeHandler(T? message) =>
+        Handler is not null && message is not null;
 
     private static async Task CompleteMessageAsync(ProcessMessageEventArgs args) =>
-        await args.CompleteMessageAsync(args.Message);
+        await args.CompleteMessageAsync(args.Message).ConfigureAwait(false);
 
     private static Task HandleErrorAsync(ProcessErrorEventArgs args)
     {
@@ -72,14 +70,14 @@ public sealed class ServiceBusConsumer<T>
     }
 
     protected override async Task StartInternalAsync(CancellationToken cancellationToken) =>
-        await _processor.StartProcessingAsync(cancellationToken);
+        await _processor.StartProcessingAsync(cancellationToken).ConfigureAwait(false);
 
     protected override async Task StopInternalAsync(CancellationToken cancellationToken) =>
-        await _processor.StopProcessingAsync(cancellationToken);
+        await _processor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
 
     public async ValueTask DisposeAsync()
     {
-        await _processor.DisposeAsync();
-        await _client.DisposeAsync();
+        await _processor.DisposeAsync().ConfigureAwait(false);
+        await _client.DisposeAsync().ConfigureAwait(false);
     }
 }

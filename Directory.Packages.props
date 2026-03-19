@@ -1,0 +1,28 @@
+﻿<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.19.0.132793" />
+    <PackageVersion Include="coverlet.collector" Version="8.0.0" />
+    <PackageVersion Include="FluentAssertions" Version="[7.0.0]" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
+    <PackageVersion Include="AWSSDK.SQS" Version="4.0.2.5" />
+    <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
+    <PackageVersion Include="Confluent.Kafka" Version="2.13.2" />
+    <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.33.0" />
+    <PackageVersion Include="NATS.Client.Core" Version="2.7.3" />
+    <PackageVersion Include="RabbitMQ.Client" Version="7.2.1" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.12.1" />
+    <PackageVersion Include="Testcontainers.ServiceBus" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.LocalStack" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.MsSql" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.PubSub" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.Kafka" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.Nats" Version="4.11.0" />
+  </ItemGroup>
+</Project>
