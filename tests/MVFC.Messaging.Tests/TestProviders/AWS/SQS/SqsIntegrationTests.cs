@@ -3,10 +3,12 @@ namespace MVFC.Messaging.Tests.TestProviders.AWS.SQS;
 public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHelper output) : IClassFixture<LocalStackFixture>
 {
     private readonly ITestOutputHelper _output = output;
-    private readonly AmazonSQSClient _sqsClient = new(new AmazonSQSConfig
-    {
-        ServiceURL = fixture.ConnectionString()
-    });
+    private readonly AmazonSQSClient _sqsClient = new(
+        new Amazon.Runtime.AnonymousAWSCredentials(),
+        new AmazonSQSConfig
+        {
+            ServiceURL = fixture.ConnectionString()
+        });
 
     [Fact]
     public async Task Should_PublishAndConsume_SingleMessage()
