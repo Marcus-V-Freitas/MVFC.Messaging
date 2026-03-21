@@ -5,13 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.1] - 2026-03-21
-
-### Added
-- Added multi-target support for `net9.0` and `net10.0` across all 9 provider packages and the Core library.
+## [2.0.2] - 2026-03-21
 
 ### Changed
 - Configured Codecov to fail CI on errors and added code coverage status thresholds.
+
+## [2.0.1] - 2026-03-20
+
+### Added
+- Added multi-target support for `net9.0` and `net10.0` across all 9 provider packages and the Core library.
 
 ### Fixed
 - Fixed `AmazonClientException` in CI by passing `AnonymousAWSCredentials` to `AmazonSQSClient` in integration tests, since LocalStack does not require real AWS credentials.
@@ -54,3 +56,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release of the MVFC.Messaging suite.
 - Base abstractions for Publishers and Consumers.
 - Initial implementations for AWS, Azure, Confluent, GCP, InMemory, Nats.IO, RabbitMQ, and StackExchange.
+
+[2.0.2]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v2.0.1...v2.0.2
+[2.0.1]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v2.0.0...v2.0.1
+[2.0.0]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v1.0.2...v2.0.0
+[1.0.2]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/releases/tag/v1.0.0
