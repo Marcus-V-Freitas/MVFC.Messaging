@@ -3,7 +3,7 @@
 > 🇧🇷 [Leia em Português](README.pt-br.md)
 
 [![CI](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml/badge.svg)](https://github.com/Marcus-V-Freitas/MVFC.Messaging/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging/branch/master/graph/badge.svg)](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging)
+[![codecov](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging/branch/main/graph/badge.svg)](https://codecov.io/gh/Marcus-V-Freitas/MVFC.Messaging)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 ![Platform](https://img.shields.io/badge/.NET-9%20%7C%2010-blue)
 ![NuGet Version](https://img.shields.io/nuget/v/MVFC.Messaging.Core)
@@ -179,3 +179,4 @@ public sealed class MyBrokerPublisher<T>(MyBrokerClient client, string destinati
 ## License
 
 [Apache-2.0](../../LICENSE)
+
