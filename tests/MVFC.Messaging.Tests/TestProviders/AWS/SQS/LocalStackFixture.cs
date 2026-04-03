@@ -4,7 +4,7 @@ public sealed class LocalStackFixture : FixtureBaseTest<LocalStackContainer>
 {
     public LocalStackFixture()
     {
-        Container = new LocalStackBuilder("localstack/localstack:latest")
+        Container = new LocalStackBuilder("localstack/localstack:3")
                               .WithEnvironment("SERVICES", "sqs")
                               .Build();
     }
