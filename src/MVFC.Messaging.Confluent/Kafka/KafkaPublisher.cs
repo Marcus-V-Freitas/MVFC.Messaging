@@ -1,12 +1,18 @@
 ﻿namespace MVFC.Messaging.Confluent.Kafka;
 
-public sealed class KafkaPublisher<T>(string bootstrapServers, string topic) 
+public sealed class KafkaPublisher<T>
     : MessagePublisherBase<T>, IAsyncDisposable
 {
     private const int FLUSH_TIMEOUT_SECONDS = 10;
 
-    private readonly IProducer<string, string> _producer = CreateKafkaProducer(bootstrapServers);
-    private readonly string _topic = topic;
+    private readonly IProducer<string, string> _producer;
+    private readonly string _topic;
+
+    public KafkaPublisher(string bootstrapServers, string topic)
+    {
+        _topic = topic;
+        _producer = CreateKafkaProducer(bootstrapServers);
+    }
 
     private static IProducer<string, string> CreateKafkaProducer(string bootstrapServers)
     {

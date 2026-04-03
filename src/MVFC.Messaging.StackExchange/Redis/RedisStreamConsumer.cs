@@ -114,13 +114,13 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
         }
     }
 
-    private static RedisValue ExtractMessageData(StreamEntry entry) => 
+    private static RedisValue ExtractMessageData(StreamEntry entry) =>
         entry.Values.FirstOrDefault(x => x.Name == DATA_FIELD_NAME).Value;
 
-    private static bool IsValidMessageData(RedisValue data) => 
+    private static bool IsValidMessageData(RedisValue data) =>
         !data.IsNullOrEmpty;
 
-    private static T? DeserializeMessage(RedisValue messageData) => 
+    private static T? DeserializeMessage(RedisValue messageData) =>
         JsonSerializer.Deserialize<T>(messageData.ToString());
 
     private bool ShouldInvokeHandler(T? message) =>

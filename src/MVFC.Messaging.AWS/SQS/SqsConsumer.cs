@@ -80,7 +80,7 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
     private bool ShouldInvokeHandler(T? message) =>
         Handler is not null && message is not null;
 
-    private async Task DeleteMessageAsync(string receiptHandle, CancellationToken cancellationToken) => 
+    private async Task DeleteMessageAsync(string receiptHandle, CancellationToken cancellationToken) =>
         await _sqsClient.DeleteMessageAsync(_queueUrl, receiptHandle, cancellationToken).ConfigureAwait(false);
 
     protected override async Task StopInternalAsync(CancellationToken cancellationToken)

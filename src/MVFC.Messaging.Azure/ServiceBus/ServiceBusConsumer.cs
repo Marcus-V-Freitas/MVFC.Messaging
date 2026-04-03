@@ -1,6 +1,6 @@
 ﻿namespace MVFC.Messaging.Azure.ServiceBus;
 
-public sealed class ServiceBusConsumer<T> 
+public sealed class ServiceBusConsumer<T>
     : MessageConsumerBase<T>, IAsyncDisposable
 {
     private readonly ServiceBusClient _client;

@@ -1,4 +1,4 @@
-namespace MVFC.Messaging.Tests.TestProviders.GCP.PubSub;
+﻿namespace MVFC.Messaging.Tests.TestProviders.GCP.PubSub;
 
 public sealed class PubSubIntegrationTests(PubSubFixture fixture, ITestOutputHelper output) : IClassFixture<PubSubFixture>
 {
@@ -106,7 +106,7 @@ public sealed class PubSubIntegrationTests(PubSubFixture fixture, ITestOutputHel
         await consumer.StartAsync(async (msg, ct) =>
         {
             tcs.SetResult(true);
-            throw new Exception("Test Exception");
+            throw new InvalidOperationException("Test Exception");
         }, CancellationToken.None);
 
         // Act

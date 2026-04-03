@@ -1,4 +1,4 @@
-namespace MVFC.Messaging.Tests.TestProviders.Confluent.Kafka;
+﻿namespace MVFC.Messaging.Tests.TestProviders.Confluent.Kafka;
 
 public sealed class KafkaIntegrationTests(KafkaFixture fixture, ITestOutputHelper output) : IClassFixture<KafkaFixture>
 {
@@ -111,7 +111,7 @@ public sealed class KafkaIntegrationTests(KafkaFixture fixture, ITestOutputHelpe
         await consumer.StartAsync(async (msg, ct) =>
         {
             tcs.SetResult(true);
-            throw new Exception("Test Exception");
+            throw new InvalidOperationException("Test Exception");
         }, CancellationToken.None);
 
         await Task.Delay(2000, TestContext.Current.CancellationToken);

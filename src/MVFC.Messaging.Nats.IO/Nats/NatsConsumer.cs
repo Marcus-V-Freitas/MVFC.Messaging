@@ -1,11 +1,17 @@
 ﻿namespace MVFC.Messaging.Nats.IO.Nats;
 
-public sealed class NatsConsumer<T>(string url, string subject) : MessageConsumerBase<T>, IAsyncDisposable
+public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private readonly NatsConnection _connection = CreateNatsConnection(url);
-    private readonly string _subject = subject;
+    private readonly NatsConnection _connection;
+    private readonly string _subject;
     private CancellationTokenSource? _cts;
     private Task? _consumeTask;
+
+    public NatsConsumer(string url, string subject)
+    {
+        _subject = subject;
+        _connection = CreateNatsConnection(url);
+    }
 
     private static NatsConnection CreateNatsConnection(string url)
     {

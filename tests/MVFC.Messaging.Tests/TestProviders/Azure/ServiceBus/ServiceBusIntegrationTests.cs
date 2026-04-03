@@ -1,4 +1,4 @@
-namespace MVFC.Messaging.Tests.TestProviders.Azure.ServiceBus;
+﻿namespace MVFC.Messaging.Tests.TestProviders.Azure.ServiceBus;
 
 public sealed class ServiceBusIntegrationTests(ServiceBusFixture fixture, ITestOutputHelper output) : IClassFixture<ServiceBusFixture>
 {
@@ -111,7 +111,7 @@ public sealed class ServiceBusIntegrationTests(ServiceBusFixture fixture, ITestO
         await consumer.StartAsync(async (msg, ct) =>
         {
             tcs.TrySetResult(true);
-            throw new Exception("Test Exception");
+            throw new InvalidOperationException("Test Exception");
         }, CancellationToken.None);
 
         await Task.Delay(2000, TestContext.Current.CancellationToken);

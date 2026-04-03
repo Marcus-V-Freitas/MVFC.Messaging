@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-04-03
+
+### Breaking Changes
+- Moved `RabbitMqPublisher` and `RabbitMqConsumer` factories to non-generic classes to resolve `CA1000`.
+
+### Added
+- Integrated `MinVer` for versioning and `Directory.Packages.props` for Central Package Management.
+- Added `build.cake` for automated build, test, and coverage reporting using `dotnet-coverage`.
+- Improved `CI` workflow with `Codecov v5` and automated GitHub Release notes.
+
+### Changed
+- Converted all private static helpers on generic classes to instance methods for project-wide consistency.
+- Enabled `TreatWarningsAsErrors` and strict code analysis in `Directory.Build.props`.
+
 ## [2.0.4] - 2026-03-21
 
 ### Changed
@@ -70,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Base abstractions for Publishers and Consumers.
 - Initial implementations for AWS, Azure, Confluent, GCP, InMemory, Nats.IO, RabbitMQ, and StackExchange.
 
+[3.0.0]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v2.0.4...v3.0.0
 [2.0.4]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v2.0.1...v2.0.2

@@ -17,7 +17,7 @@ public sealed class ServiceBusFixture : FixtureBaseTest<ServiceBusContainer>
                                 .WithNetworkAliases("sql-edge")
                                 .Build();
 
-        _container = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest")
+        Container = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest")
                                .WithMsSqlContainer(_network, _sqlContainer, "sql-edge", "Strong!Passw0rd")
                                .WithConfig(Path.Combine(Directory.GetCurrentDirectory(), "TestProviders", "Azure", "ServiceBus", "dados.json"))
                                .WithAcceptLicenseAgreement(true)
@@ -28,16 +28,17 @@ public sealed class ServiceBusFixture : FixtureBaseTest<ServiceBusContainer>
     {
         await _network.CreateAsync().ConfigureAwait(false);
         await _sqlContainer.StartAsync().ConfigureAwait(false);
-        await _container.StartAsync().ConfigureAwait(false);
+        await Container.StartAsync().ConfigureAwait(false);
     }
 
     public override async ValueTask DisposeAsync()
     {
-        await _container.DisposeAsync().ConfigureAwait(false);
+        await base.DisposeAsync().ConfigureAwait(false);
+        await Container.DisposeAsync().ConfigureAwait(false);
         await _sqlContainer.DisposeAsync().ConfigureAwait(false);
         await _network.DeleteAsync().ConfigureAwait(false);
     }
 
     public override string ConnectionString() =>
-        _container.GetConnectionString();
+        Container.GetConnectionString();
 }

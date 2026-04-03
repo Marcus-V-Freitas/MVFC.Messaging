@@ -1,19 +1,8 @@
 ﻿namespace MVFC.Messaging.RabbitMQ.Rabbit;
 
-public sealed class RabbitMqPublisher<T> : MessagePublisherBase<T>, IAsyncDisposable
+public static class RabbitMqPublisher
 {
-    private readonly IConnection _connection;
-    private readonly IChannel _channel;
-    private readonly string _queueName;
-
-    private RabbitMqPublisher(IConnection connection, IChannel channel, string queueName)
-    {
-        _connection = connection;
-        _channel = channel;
-        _queueName = queueName;
-    }
-
-    public static async Task<RabbitMqPublisher<T>> CreateAsync(
+    public static async Task<RabbitMqPublisher<T>> CreateAsync<T>(
         string connectionString,
         string queueName)
     {
@@ -31,8 +20,22 @@ public sealed class RabbitMqPublisher<T> : MessagePublisherBase<T>, IAsyncDispos
         var factory = new ConnectionFactory { Uri = new Uri(connectionString) };
         return await factory.CreateConnectionAsync().ConfigureAwait(false);
     }
+}
 
-    private async Task ConfigureQueueAsync()
+public sealed class RabbitMqPublisher<T> : MessagePublisherBase<T>, IAsyncDisposable
+{
+    private readonly IConnection _connection;
+    private readonly IChannel _channel;
+    private readonly string _queueName;
+
+    internal RabbitMqPublisher(IConnection connection, IChannel channel, string queueName)
+    {
+        _connection = connection;
+        _channel = channel;
+        _queueName = queueName;
+    }
+
+    internal async Task ConfigureQueueAsync()
     {
         await _channel.QueueDeclareAsync(
             queue: _queueName,

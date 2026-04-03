@@ -4,12 +4,12 @@ public sealed class LocalStackFixture : FixtureBaseTest<LocalStackContainer>
 {
     public LocalStackFixture()
     {
-        _container = new LocalStackBuilder("localstack/localstack:latest")
+        Container = new LocalStackBuilder("localstack/localstack:latest")
                               .WithEnvironment("SERVICES", "sqs")
                               .Build();
     }
 
 
-    public override string ConnectionString() => 
-        _container.GetConnectionString();
+    public override string ConnectionString() =>
+        Container.GetConnectionString();
 }

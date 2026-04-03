@@ -51,7 +51,7 @@ public sealed class SqsPublisher<T>(IAmazonSQS sqsClient, string queueUrl)
 
         return new SendMessageBatchRequestEntry
         {
-            Id = index.ToString(),
+            Id = index.ToString(CultureInfo.InvariantCulture),
             MessageBody = messageBody
         };
     }

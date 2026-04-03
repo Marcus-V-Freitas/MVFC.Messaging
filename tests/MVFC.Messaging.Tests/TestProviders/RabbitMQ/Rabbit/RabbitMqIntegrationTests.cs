@@ -1,4 +1,4 @@
-namespace MVFC.Messaging.Tests.TestProviders.RabbitMQ.Rabbit;
+﻿namespace MVFC.Messaging.Tests.TestProviders.RabbitMQ.Rabbit;
 
 public sealed class RabbitMqIntegrationTests(RabbitMqFixture fixture, ITestOutputHelper output) : IClassFixture<RabbitMqFixture>
 {
@@ -12,8 +12,8 @@ public sealed class RabbitMqIntegrationTests(RabbitMqFixture fixture, ITestOutpu
         const string QUEUE_NAME = "test-rabbit-queue";
         var connectionString = _fixture.ConnectionString();
 
-        await using var publisher = await RabbitMqPublisher<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
-        await using var consumer = await RabbitMqConsumer<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
+        await using var publisher = await RabbitMqPublisher.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
+        await using var consumer = await RabbitMqConsumer.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
 
         var tcs = new TaskCompletionSource<TestMessage>();
         await consumer.StartAsync(async (msg, ct) =>
@@ -45,8 +45,8 @@ public sealed class RabbitMqIntegrationTests(RabbitMqFixture fixture, ITestOutpu
         const string QUEUE_NAME = "test-rabbit-batch";
         var connectionString = _fixture.ConnectionString();
 
-        await using var publisher = await RabbitMqPublisher<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
-        await using var consumer = await RabbitMqConsumer<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
+        await using var publisher = await RabbitMqPublisher.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
+        await using var consumer = await RabbitMqConsumer.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
 
         var receivedMessages = new List<TestMessage>();
         var tcs = new TaskCompletionSource<bool>();
@@ -87,8 +87,8 @@ public sealed class RabbitMqIntegrationTests(RabbitMqFixture fixture, ITestOutpu
         // Arrange
         const string QUEUE_NAME = "dispose.rabbit.queue";
         var connectionString = _fixture.ConnectionString();
-        var publisher = await RabbitMqPublisher<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
-        var consumer = await RabbitMqConsumer<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
+        var publisher = await RabbitMqPublisher.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
+        var consumer = await RabbitMqConsumer.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
 
         // Act
         await publisher.DisposeAsync();
@@ -105,14 +105,14 @@ public sealed class RabbitMqIntegrationTests(RabbitMqFixture fixture, ITestOutpu
         const string QUEUE_NAME = "exception.rabbit.queue";
         var connectionString = _fixture.ConnectionString();
 
-        await using var publisher = await RabbitMqPublisher<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
-        await using var consumer = await RabbitMqConsumer<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
+        await using var publisher = await RabbitMqPublisher.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
+        await using var consumer = await RabbitMqConsumer.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
 
         var tcs = new TaskCompletionSource<bool>();
         await consumer.StartAsync(async (msg, ct) =>
         {
             tcs.TrySetResult(true);
-            throw new Exception("Test Exception");
+            throw new InvalidOperationException("Test Exception");
         }, CancellationToken.None);
 
         await Task.Delay(1000, TestContext.Current.CancellationToken);
@@ -131,8 +131,8 @@ public sealed class RabbitMqIntegrationTests(RabbitMqFixture fixture, ITestOutpu
         // Arrange
         const string QUEUE_NAME = "null.rabbit.queue";
         var connectionString = _fixture.ConnectionString();
-        await using var publisher = await RabbitMqPublisher<string>.CreateAsync(connectionString, QUEUE_NAME);
-        await using var consumer = await RabbitMqConsumer<TestMessage>.CreateAsync(connectionString, QUEUE_NAME);
+        await using var publisher = await RabbitMqPublisher.CreateAsync<string>(connectionString, QUEUE_NAME);
+        await using var consumer = await RabbitMqConsumer.CreateAsync<TestMessage>(connectionString, QUEUE_NAME);
 
         var handlerInvoked = false;
         await consumer.StartAsync((msg, ct) =>

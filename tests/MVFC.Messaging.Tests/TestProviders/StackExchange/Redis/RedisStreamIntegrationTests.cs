@@ -1,4 +1,4 @@
-namespace MVFC.Messaging.Tests.TestProviders.StackExchange.Redis;
+﻿namespace MVFC.Messaging.Tests.TestProviders.StackExchange.Redis;
 
 public sealed class RedisStreamIntegrationTests(RedisFixture fixture, ITestOutputHelper output) : IClassFixture<RedisFixture>
 {
@@ -111,7 +111,7 @@ public sealed class RedisStreamIntegrationTests(RedisFixture fixture, ITestOutpu
         await consumer.StartAsync(async (msg, ct) =>
         {
             tcs.SetResult(true);
-            throw new Exception("Test Exception");
+            throw new InvalidOperationException("Test Exception");
         }, CancellationToken.None);
 
         await Task.Delay(1000, TestContext.Current.CancellationToken);

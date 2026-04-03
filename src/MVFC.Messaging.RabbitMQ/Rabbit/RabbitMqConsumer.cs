@@ -1,22 +1,8 @@
 ﻿namespace MVFC.Messaging.RabbitMQ.Rabbit;
 
-public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
+public static class RabbitMqConsumer
 {
-    private const ushort PREFETCH_COUNT = 10;
-
-    private readonly IConnection _connection;
-    private readonly IChannel _channel;
-    private readonly string _queueName;
-    private AsyncEventingBasicConsumer? _consumer;
-
-    private RabbitMqConsumer(IConnection connection, IChannel channel, string queueName)
-    {
-        _connection = connection;
-        _channel = channel;
-        _queueName = queueName;
-    }
-
-    public static async Task<RabbitMqConsumer<T>> CreateAsync(
+    public static async Task<RabbitMqConsumer<T>> CreateAsync<T>(
         string connectionString,
         string queueName)
     {
@@ -39,8 +25,25 @@ public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposab
 
         return await factory.CreateConnectionAsync().ConfigureAwait(false);
     }
+}
 
-    private async Task ConfigureQueueAsync()
+public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
+{
+    private const ushort PREFETCH_COUNT = 10;
+
+    private readonly IConnection _connection;
+    private readonly IChannel _channel;
+    private readonly string _queueName;
+    private AsyncEventingBasicConsumer? _consumer;
+
+    internal RabbitMqConsumer(IConnection connection, IChannel channel, string queueName)
+    {
+        _connection = connection;
+        _channel = channel;
+        _queueName = queueName;
+    }
+
+    internal async Task ConfigureQueueAsync()
     {
         await _channel.QueueDeclareAsync(
             queue: _queueName,
@@ -50,7 +53,7 @@ public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposab
             arguments: null).ConfigureAwait(false);
     }
 
-    private async Task ConfigureQosAsync()
+    internal async Task ConfigureQosAsync()
     {
         await _channel.BasicQosAsync(
             prefetchSize: 0,

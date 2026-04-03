@@ -31,7 +31,7 @@ public sealed class RedisStreamPublisher<T> : MessagePublisherBase<T>, IAsyncDis
 
     private IEnumerable<Task> CreatePublishTasks(
         IEnumerable<T> messages,
-        CancellationToken cancellationToken) => 
+        CancellationToken cancellationToken) =>
             messages.Select(message => PublishInternalAsync(message, cancellationToken));
 
     private static NameValueEntry[] CreateStreamEntry(T message)

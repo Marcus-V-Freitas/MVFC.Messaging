@@ -1,12 +1,17 @@
 ﻿namespace MVFC.Messaging.Confluent.Kafka;
 
-public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, string groupId) 
-    : MessageConsumerBase<T>, IAsyncDisposable
+public sealed class KafkaConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private readonly IConsumer<string, string> _consumer = CreateKafkaConsumer(bootstrapServers, groupId);
-    private readonly string _topic = topic;
+    private readonly IConsumer<string, string> _consumer;
+    private readonly string _topic;
     private CancellationTokenSource? _cts;
     private Task? _consumeTask;
+
+    public KafkaConsumer(string bootstrapServers, string topic, string groupId)
+    {
+        _topic = topic;
+        _consumer = CreateKafkaConsumer(bootstrapServers, groupId);
+    }
 
     private static IConsumer<string, string> CreateKafkaConsumer(string bootstrapServers, string groupId)
     {
@@ -81,7 +86,7 @@ public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, stri
     private bool ShouldInvokeHandler(T? message) =>
         Handler is not null && message is not null;
 
-    private void CommitOffset(ConsumeResult<string, string> consumeResult) => 
+    private void CommitOffset(ConsumeResult<string, string> consumeResult) =>
         _consumer.Commit(consumeResult);
 
     protected override Task StopInternalAsync(CancellationToken cancellationToken)

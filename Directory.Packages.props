@@ -24,5 +24,6 @@
     <PackageVersion Include="Testcontainers.Kafka" Version="4.11.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.11.0" />
     <PackageVersion Include="Testcontainers.Nats" Version="4.11.0" />
+    <PackageVersion Include="MinVer" Version="6.0.0" />
   </ItemGroup>
 </Project>

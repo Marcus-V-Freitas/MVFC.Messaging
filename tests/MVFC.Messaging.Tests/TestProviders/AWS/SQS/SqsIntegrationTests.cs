@@ -1,6 +1,6 @@
-namespace MVFC.Messaging.Tests.TestProviders.AWS.SQS;
+﻿namespace MVFC.Messaging.Tests.TestProviders.AWS.SQS;
 
-public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHelper output) : IClassFixture<LocalStackFixture>
+public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHelper output) : IClassFixture<LocalStackFixture>, IDisposable
 {
     private readonly ITestOutputHelper _output = output;
     private readonly AmazonSQSClient _sqsClient = new(
@@ -117,7 +117,7 @@ public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHe
         await consumer.StartAsync(async (msg, ct) =>
         {
             tcs.TrySetResult(true);
-            throw new Exception("Test Exception");
+            throw new InvalidOperationException("Test Exception");
         }, CancellationToken.None);
 
         await Task.Delay(1000, TestContext.Current.CancellationToken);
@@ -130,4 +130,7 @@ public sealed class SqsIntegrationTests(LocalStackFixture fixture, ITestOutputHe
         // The consumer should handle the exception and continue
         await consumer.StopAsync(CancellationToken.None);
     }
+
+    public void Dispose() =>
+        _sqsClient.Dispose();
 }

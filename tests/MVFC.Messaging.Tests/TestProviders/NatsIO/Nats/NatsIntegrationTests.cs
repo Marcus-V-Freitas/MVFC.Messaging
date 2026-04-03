@@ -1,4 +1,4 @@
-namespace MVFC.Messaging.Tests.TestProviders.NatsIO.Nats;
+﻿namespace MVFC.Messaging.Tests.TestProviders.NatsIO.Nats;
 
 public sealed class NatsIntegrationTests(NatsFixture fixture, ITestOutputHelper output) : IClassFixture<NatsFixture>
 {
@@ -108,7 +108,7 @@ public sealed class NatsIntegrationTests(NatsFixture fixture, ITestOutputHelper 
         await consumer.StartAsync(async (msg, ct) =>
         {
             tcs.SetResult(true);
-            throw new Exception("Test Exception");
+            throw new InvalidOperationException("Test Exception");
         }, CancellationToken.None);
 
         await Task.Delay(1000, TestContext.Current.CancellationToken);
