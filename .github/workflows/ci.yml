@@ -1,4 +1,4 @@
-name: CI / Publish
+﻿name: CI / Publish
 
 on:
   push:
@@ -137,8 +137,8 @@ jobs:
     if: |
       always() &&
       startsWith(github.ref, 'refs/tags/v') &&
-      (needs.test-and-coverage.result == 'failure' || 
-       needs.build-and-publish.result == 'failure' || 
+      (needs.test-and-coverage.result == 'failure' ||
+       needs.build-and-publish.result == 'failure' ||
        needs.create-release.result == 'failure')
     permissions:
       contents: write
