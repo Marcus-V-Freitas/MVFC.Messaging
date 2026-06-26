@@ -71,7 +71,7 @@ public sealed class PubSubConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
 
     protected override async Task StopInternalAsync(CancellationToken cancellationToken)
     {
-        await _subscriber.StopAsync(cancellationToken).ConfigureAwait(false);
+        await _subscriber.StopAsync(new ShutdownOptions(), cancellationToken).ConfigureAwait(false);
 
         if (_subscriberTask is not null)
         {
@@ -102,7 +102,7 @@ public sealed class PubSubConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
     }
 
     private async Task StopSubscriberAsync() =>
-        await _subscriber.StopAsync(CancellationToken.None).ConfigureAwait(false);
+        await _subscriber.StopAsync(new ShutdownOptions(), CancellationToken.None).ConfigureAwait(false);
 
     private async Task AwaitSubscriberTaskCompletionSafelyAsync()
     {
