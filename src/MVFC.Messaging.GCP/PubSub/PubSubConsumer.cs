@@ -1,16 +1,11 @@
 ﻿namespace MVFC.Messaging.GCP.PubSub;
 
-public sealed class PubSubConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
+public sealed class PubSubConsumer<T>(string projectId, string subscriptionId) : MessageConsumerBase<T>, IAsyncDisposable
 {
     private const int STARTUP_DELAY_MILLISECONDS = 1000;
 
-    private readonly SubscriberClient _subscriber;
+    private readonly SubscriberClient _subscriber = CreateSubscriberClient(projectId, subscriptionId);
     private Task? _subscriberTask;
-
-    public PubSubConsumer(string projectId, string subscriptionId)
-    {
-        _subscriber = CreateSubscriberClient(projectId, subscriptionId);
-    }
 
     private static SubscriberClient CreateSubscriberClient(string projectId, string subscriptionId)
     {
@@ -19,7 +14,7 @@ public sealed class PubSubConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
         return new SubscriberClientBuilder
         {
             SubscriptionName = subscriptionName,
-            EmulatorDetection = EmulatorDetection.EmulatorOrProduction
+            EmulatorDetection = EmulatorDetection.EmulatorOrProduction,
         }.Build();
     }
 

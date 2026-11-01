@@ -27,7 +27,7 @@ public sealed class SqsPublisher<T>(IAmazonSQS sqsClient, string queueUrl)
         return new SendMessageRequest
         {
             QueueUrl = _queueUrl,
-            MessageBody = messageBody
+            MessageBody = messageBody,
         };
     }
 
@@ -38,7 +38,7 @@ public sealed class SqsPublisher<T>(IAmazonSQS sqsClient, string queueUrl)
         return new SendMessageBatchRequest
         {
             QueueUrl = _queueUrl,
-            Entries = entries
+            Entries = entries,
         };
     }
 
@@ -52,7 +52,7 @@ public sealed class SqsPublisher<T>(IAmazonSQS sqsClient, string queueUrl)
         return new SendMessageBatchRequestEntry
         {
             Id = index.ToString(CultureInfo.InvariantCulture),
-            MessageBody = messageBody
+            MessageBody = messageBody,
         };
     }
 

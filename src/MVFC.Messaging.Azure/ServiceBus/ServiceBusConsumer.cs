@@ -17,7 +17,7 @@ public sealed class ServiceBusConsumer<T>
     {
         var clientOptions = new ServiceBusClientOptions
         {
-            TransportType = ServiceBusTransportType.AmqpTcp
+            TransportType = ServiceBusTransportType.AmqpTcp,
         };
 
         return new ServiceBusClient(connectionString, clientOptions);
@@ -27,7 +27,7 @@ public sealed class ServiceBusConsumer<T>
     {
         var processorOptions = new ServiceBusProcessorOptions
         {
-            AutoCompleteMessages = false
+            AutoCompleteMessages = false,
         };
 
         return _client.CreateProcessor(queueOrTopicName, processorOptions);
@@ -61,7 +61,7 @@ public sealed class ServiceBusConsumer<T>
         Handler is not null && message is not null;
 
     private static async Task CompleteMessageAsync(ProcessMessageEventArgs args) =>
-        await args.CompleteMessageAsync(args.Message).ConfigureAwait(false);
+        await args.CompleteMessageAsync(args.Message, args.CancellationToken).ConfigureAwait(false);
 
     private static Task HandleErrorAsync(ProcessErrorEventArgs args)
     {

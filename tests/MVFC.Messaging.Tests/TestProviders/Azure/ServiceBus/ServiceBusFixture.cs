@@ -1,4 +1,4 @@
-﻿namespace MVFC.Messaging.Tests.TestProviders.Azure.ServiceBus;
+namespace MVFC.Messaging.Tests.TestProviders.Azure.ServiceBus;
 
 public sealed class ServiceBusFixture : FixtureBaseTest<ServiceBusContainer>
 {
@@ -21,6 +21,7 @@ public sealed class ServiceBusFixture : FixtureBaseTest<ServiceBusContainer>
                                .WithMsSqlContainer(_network, _sqlContainer, "sql-edge", "Strong!Passw0rd")
                                .WithConfig(Path.Combine(Directory.GetCurrentDirectory(), "TestProviders", "Azure", "ServiceBus", "dados.json"))
                                .WithAcceptLicenseAgreement(true)
+                               .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Emulator Service is Successfully Up!"))
                                .Build();
     }
 

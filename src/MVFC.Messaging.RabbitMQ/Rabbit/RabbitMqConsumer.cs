@@ -20,7 +20,7 @@ public static class RabbitMqConsumer
     {
         var factory = new ConnectionFactory
         {
-            Uri = new Uri(connectionString)
+            Uri = new Uri(connectionString),
         };
 
         return await factory.CreateConnectionAsync().ConfigureAwait(false);
@@ -64,7 +64,7 @@ public sealed class RabbitMqConsumer<T> : MessageConsumerBase<T>, IAsyncDisposab
     protected override async Task StartInternalAsync(CancellationToken cancellationToken)
     {
         _consumer = new AsyncEventingBasicConsumer(_channel);
-        _consumer.ReceivedAsync += (sender, ea) => HandleMessageReceivedAsync(ea, cancellationToken);
+        _consumer.ReceivedAsync += (_, ea) => HandleMessageReceivedAsync(ea, cancellationToken);
 
         await StartConsumingAsync().ConfigureAwait(false);
     }

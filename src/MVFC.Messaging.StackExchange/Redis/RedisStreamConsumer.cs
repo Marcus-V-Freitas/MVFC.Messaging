@@ -129,10 +129,10 @@ public sealed class RedisStreamConsumer<T> : MessageConsumerBase<T>, IAsyncDispo
     private async Task AcknowledgeMessageAsync(RedisValue messageId) =>
         await _db.StreamAcknowledgeAsync(_streamKey, _consumerGroup, messageId).ConfigureAwait(false);
 
-    protected override Task StopInternalAsync(CancellationToken cancellationToken)
+    protected override async Task StopInternalAsync(CancellationToken cancellationToken)
     {
-        _cts?.Cancel();
-        return Task.CompletedTask;
+        if (_cts is not null)
+            await _cts.CancelAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()

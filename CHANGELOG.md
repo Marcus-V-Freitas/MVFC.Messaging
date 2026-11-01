@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.4] - 2026-11-01
+
+### Added
+
+- Added `tests/.editorconfig` and configured rule `CA2007` (`ConfigureAwait`) to be ignored for test projects.
+- Added `global.json` pinning .NET SDK and test runner configuration.
+- Added `dotnet-coverage` and `dotnet-reportgenerator-globaltool` to `.config/dotnet-tools.json`.
+
+### Changed
+
+- Updated NuGet package dependencies and integrated `MVFC.Pack.Analyzers`.
+- Modernized `.editorconfig` rules, disabling `RCS1075` and `S4457`.
+- Modernized providers code style (primary constructors, `CancelAsync()`, trailing commas).
+- Refactored CI workflow with OIDC authentication for publishing to NuGet.org and improved coverage reporting.
+
 ## [3.0.3] - 2026-06-26
 
 ### Changed
@@ -120,6 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Base abstractions for Publishers and Consumers.
 - Initial implementations for AWS, Azure, Confluent, GCP, InMemory, Nats.IO, RabbitMQ, and StackExchange.
 
+[3.0.4]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v3.0.3...v3.0.4
 [3.0.3]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v3.0.2...v3.0.3
 [3.0.2]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/Marcus-V-Freitas/MVFC.Messaging/compare/v3.0.0...v3.0.1

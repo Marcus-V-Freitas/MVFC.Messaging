@@ -1,17 +1,11 @@
 ﻿namespace MVFC.Messaging.Nats.IO.Nats;
 
-public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
+public sealed class NatsConsumer<T>(string url, string subject) : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private readonly NatsConnection _connection;
-    private readonly string _subject;
+    private readonly NatsConnection _connection = CreateNatsConnection(url);
+    private readonly string _subject = subject;
     private CancellationTokenSource? _cts;
     private Task? _consumeTask;
-
-    public NatsConsumer(string url, string subject)
-    {
-        _subject = subject;
-        _connection = CreateNatsConnection(url);
-    }
 
     private static NatsConnection CreateNatsConnection(string url)
     {
@@ -31,7 +25,7 @@ public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
     {
         try
         {
-            await foreach (var natsMessage in SubscribeToSubjectAsync(cancellationToken))
+            await foreach (var natsMessage in SubscribeToSubjectAsync(cancellationToken).ConfigureAwait(false))
             {
                 await ProcessNatsMessageAsync(natsMessage, cancellationToken).ConfigureAwait(false);
             }
@@ -82,10 +76,10 @@ public sealed class NatsConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
     private bool ShouldInvokeHandler(T? message) =>
         Handler is not null && message is not null;
 
-    protected override Task StopInternalAsync(CancellationToken cancellationToken)
+    protected override async Task StopInternalAsync(CancellationToken cancellationToken)
     {
-        _cts?.Cancel();
-        return Task.CompletedTask;
+        if (_cts is not null)
+            await _cts.CancelAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()

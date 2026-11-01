@@ -1,0 +1,8 @@
+# ============================================================
+#  MVFC.Messaging.Tests – .editorconfig
+# ============================================================
+
+[*.cs]
+# CA2007: Considere chamar ConfigureAwait na tarefa esperada (não se aplica a testes)
+dotnet_diagnostic.CA2007.severity = none
+

@@ -1,17 +1,11 @@
 ﻿namespace MVFC.Messaging.Confluent.Kafka;
 
-public sealed class KafkaConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
+public sealed class KafkaConsumer<T>(string bootstrapServers, string topic, string groupId) : MessageConsumerBase<T>, IAsyncDisposable
 {
-    private readonly IConsumer<string, string> _consumer;
-    private readonly string _topic;
+    private readonly IConsumer<string, string> _consumer = CreateKafkaConsumer(bootstrapServers, groupId);
+    private readonly string _topic = topic;
     private CancellationTokenSource? _cts;
     private Task? _consumeTask;
-
-    public KafkaConsumer(string bootstrapServers, string topic, string groupId)
-    {
-        _topic = topic;
-        _consumer = CreateKafkaConsumer(bootstrapServers, groupId);
-    }
 
     private static IConsumer<string, string> CreateKafkaConsumer(string bootstrapServers, string groupId)
     {
@@ -20,7 +14,7 @@ public sealed class KafkaConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
             BootstrapServers = bootstrapServers,
             GroupId = groupId,
             AutoOffsetReset = AutoOffsetReset.Earliest,
-            EnableAutoCommit = false
+            EnableAutoCommit = false,
         };
 
         return new ConsumerBuilder<string, string>(config).Build();
@@ -89,10 +83,10 @@ public sealed class KafkaConsumer<T> : MessageConsumerBase<T>, IAsyncDisposable
     private void CommitOffset(ConsumeResult<string, string> consumeResult) =>
         _consumer.Commit(consumeResult);
 
-    protected override Task StopInternalAsync(CancellationToken cancellationToken)
+    protected override async Task StopInternalAsync(CancellationToken cancellationToken)
     {
-        _cts?.Cancel();
-        return Task.CompletedTask;
+        if (_cts is not null)
+            await _cts.CancelAsync().ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()

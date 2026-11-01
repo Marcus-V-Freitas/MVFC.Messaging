@@ -1,13 +1,8 @@
 ﻿namespace MVFC.Messaging.GCP.PubSub;
 
-public sealed class PubSubPublisher<T> : MessagePublisherBase<T>, IAsyncDisposable
+public sealed class PubSubPublisher<T>(string projectId, string topicId) : MessagePublisherBase<T>, IAsyncDisposable
 {
-    private readonly PublisherClient _publisher;
-
-    public PubSubPublisher(string projectId, string topicId)
-    {
-        _publisher = CreatePublisherClient(projectId, topicId);
-    }
+    private readonly PublisherClient _publisher = CreatePublisherClient(projectId, topicId);
 
     private static PublisherClient CreatePublisherClient(string projectId, string topicId)
     {

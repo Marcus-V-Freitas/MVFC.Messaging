@@ -16,7 +16,7 @@ public sealed class ServiceBusPublisher<T>
     {
         var clientOptions = new ServiceBusClientOptions
         {
-            TransportType = ServiceBusTransportType.AmqpTcp
+            TransportType = ServiceBusTransportType.AmqpTcp,
         };
 
         return new ServiceBusClient(connectionString, clientOptions);
@@ -49,8 +49,7 @@ public sealed class ServiceBusPublisher<T>
 
             if (!messageBatch.TryAddMessage(busMessage))
             {
-                throw new InvalidOperationException(
-                    $"Message could not be added to batch. Batch size limit reached.");
+                throw new InvalidOperationException("Message could not be added to batch. Batch size limit reached.");
             }
         }
     }

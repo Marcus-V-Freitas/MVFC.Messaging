@@ -51,7 +51,7 @@ public sealed class SqsConsumer<T>(IAmazonSQS sqsClient, string queueUrl)
         {
             QueueUrl = _queueUrl,
             MaxNumberOfMessages = MAX_MESSAGES_PER_REQUEST,
-            WaitTimeSeconds = WAIT_TIME_SECONDS
+            WaitTimeSeconds = WAIT_TIME_SECONDS,
         };
     }
 
